@@ -1,0 +1,10 @@
+#footer{
+    margin-top: 20px;
+}
+#nav{
+    margin-bottom: 20px;
+}
+#timeRange,#makeDay{
+    text-align: center;
+    text-indent: -10%;
+}

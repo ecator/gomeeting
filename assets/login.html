@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>GoMeeting-login</title>
+        <link rel="stylesheet" href="css/bulma.min.css">
+        <link rel="stylesheet" href="css/global.css">
+        <script src="/js/vue.js"></script>
+        <script src="/js/axios.min.js"></script>
+        <script src="/js/md5.js"></script>
+        <script src="/js/fontawesome.js"></script>
+    </head>
+    <body>
+        <section class="hero is-primary">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">
+                        Go Meeting
+                    </h1>
+                    <h2 class="subtitle">
+                        Welcome
+                    </h2>
+                </div>
+            </div>
+        </section>
+        <br>
+        <section>
+            <div class="contianer">
+                <div class="columns is-mobile is-centered">
+                    <div class="cloumn is-4" id="login">
+                        <div class="field">
+                            <p class="control has-icons-left has-icons-right">
+                                <input class="input is-large" type="text"
+                                    placeholder="username"
+                                    v-model:value="username">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input is-large" type="password"
+                                    placeholder="password"
+                                    v-model:value="password">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control">
+                                <button class="button is-primary is-large
+                                    is-fullwidth"
+                                    v-on:click="login"
+                                    v-bind:disabled="canLogin">
+                                    Login
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br>
+        <section id="footer">
+            <my-footer></my-footer>
+        </section>
+        <script src="/js/login.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

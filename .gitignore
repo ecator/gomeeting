@@ -1,0 +1,8 @@
+/TEST/
+.DS_Store
+config.yml
+server.log
+/backend/backend_test.go
+/.vscode/
+*.code-workspace
+/vendor/
