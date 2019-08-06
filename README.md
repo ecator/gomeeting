@@ -1,6 +1,7 @@
 
-# Overview
+# GoMeeting [![Build Status](https://www.travis-ci.org/ecator/gomeeting.svg?branch=master)](https://www.travis-ci.org/ecator/gomeeting)
 
+It's a very simple meeting room booking system written by golang for learning.
 
 ---
 # Reference
