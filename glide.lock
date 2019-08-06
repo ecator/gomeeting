@@ -1,8 +1,14 @@
-hash: 2b1acf4303ba06b224c9398daa0238a74ed679753c16b51b92020960faadb2c5
-updated: 2019-07-28T12:23:36.091788+08:00
+hash: 7bb2fe345dfa6a2e74e94a1f9e1073e520814a528a47543dfdcac152791de499
+updated: 2019-08-06T20:56:53.824919+08:00
 imports:
 - name: github.com/go-sql-driver/mysql
   version: 72cd26f257d44c1114970e19afddcd812016007e
+- name: github.com/julienschmidt/httprouter
+  version: 26a05976f9bf5c3aa992cc20e8588c359418ee58
+- name: google.golang.org/appengine
+  version: fb139bde60fa77cede04f226b4d5a3cf68dcce27
+  subpackages:
+  - cloudsql
 - name: gopkg.in/yaml.v2
   version: 51d6538a90f86fe93ac480b35f37b2be17fef232
 testImports: []

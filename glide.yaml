@@ -1,4 +1,4 @@
-package: .
+package: github.com/ecator/gomeeting
 import:
 - package: gopkg.in/yaml.v2
   version: ~2.2.2
