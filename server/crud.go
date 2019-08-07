@@ -21,7 +21,7 @@ func insertObj(o interface{}) error {
 		} else if fun.GetStrByName(o, "Pw") == "" {
 			err = errors.New(msg.GetMsg(9007, "password"))
 		} else {
-			sql = fmt.Sprintf("insert into user values (%d,'%s','%s',%d,%d,'%s','%s')", fun.GetUint32ByName(o, "ID"), fun.GetStrByName(o, "Username"), fun.GetStrByName(o, "Pw"), fun.GetUint32ByName(o, "Level"), fun.GetUint32ByName(o, "OrgID"), fun.GetStrByName(o, "Name"), fun.GetStrByName(o, "Emai"))
+			sql = fmt.Sprintf("insert into user values (%d,'%s','%s',%d,%d,'%s','%s')", fun.GetUint32ByName(o, "ID"), fun.GetStrByName(o, "Username"), fun.GetStrByName(o, "Pw"), fun.GetUint32ByName(o, "Level"), fun.GetUint32ByName(o, "OrgID"), fun.GetStrByName(o, "Name"), fun.GetStrByName(o, "Email"))
 		}
 	case *org:
 		if fun.GetStrByName(o, "Name") == "" {

@@ -53,6 +53,8 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 				// no privilege
 				status = 9004
 				resp = jsonResp{status, msg.GetMsg(status, "privilege")}
+			} else if fun.GetStrByName(o, "Pw") != "" {
+				fun.SetStrByName(o, "Pw", fun.GetMd5Str(fun.GetStrByName(o, "Pw")))
 			}
 		}
 		if status == 0 {
