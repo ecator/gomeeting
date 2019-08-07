@@ -8,7 +8,7 @@ It's a very simple meeting room booking system written by go language for learni
  - GNU Make (optional)
  
 ### Steps
-```
+```shell
 go get go get github.com/ecator/gomeeting
 cd ~/go/src/github.com/ecator/gomeeting
 make
@@ -52,7 +52,7 @@ It will use that to connect to mysql so be careful.
 
 Now you can run `bin/gomeeting -a 0.0.0.0` to start the server.The `-a 0.0.0.0` option makes sure you can access this service from remote,otherwise it only listens on local.You can run `bin/gomeeting -h` for more details.
 
-```
+```shell
 Usage of bin/gomeeting:
   -a string
     	The listen address (default "localhost")
@@ -81,21 +81,37 @@ The above will get the information of the user whose id is 1000.
 
 There are same scripts you can use in the `script` folder.
 
-```
-script/user.sh add xxx
-script/user.sh del xxx
-script/user.sh mod xxx
-script/user.sh get xxx
+```shell
+# You must export same environment variables
+export GOMEETING_HOST=localhost:7728
+export GOMEETING_TOKEN=xxxxx
 
-script/room.sh add xxx
-script/room.sh del xxx
-script/room.sh mod xxx
-script/room.sh get xxx
+# Add a new user
+script/user.sh add 'username=test&password=123&level=10&org_id=1000&name=Martin&email=mail@example.com'
+# Delete the user whose id is 1000
+script/user.sh del 1000
+# Modify the user's password whose is is 1000
+script/user.sh mod 1000 'password=123'
+# Get the information of user whose id is 1000
+script/user.sh get 1000
 
-script/org.sh add xxx
-script/org.sh del xxx
-script/org.sh mod xxx
-script/org.sh get xxx
+# Add a new room named roo1
+script/room.sh add name=room1
+# Delete the room which id is 1000
+script/room.sh del 1000
+# Modify the room name of id 1000
+script/room.sh mod 1000 name=room3
+# Get the information of room which id is 1000
+script/room.sh get 1000
+
+# Add a new org named roo1
+script/org.sh add name=org1
+# Delete the org which id is 1000
+script/org.sh del 1000
+# Modify the org name of id 1000
+script/org.sh mod 1000 name=org3
+# Get the information of org which id is 1000
+script/org.sh get 1000
 ```
 
 ### Using
