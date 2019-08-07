@@ -20,7 +20,7 @@ Vue.component("my-nav",{
                 <div class="navbar-end">
                     <div class="navbar-item">
                             <a class="button is-light" href="/logout">
-                                Log out
+                                Logout
                             </a>
                     </div>
                 </div>
