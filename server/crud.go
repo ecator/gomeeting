@@ -213,7 +213,6 @@ func makeJSONrespMeetings(makeDate uint32, orgID uint32) []jsonRespMeeting {
 			inner join room on meeting.room_id=room.id
 			inner join org on user.org_id=org.id 
 		where user.org_id=%d and meeting.make_date=%d
-		order by meeting.start_time asc
 	`
 	sql = fmt.Sprintf(sql, orgID, makeDate)
 	ms = []jsonRespMeeting{}
