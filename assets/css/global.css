@@ -8,3 +8,6 @@
     text-align: center;
     text-indent: -10%;
 }
+.fa-caret-down,.fa-caret-up{
+    cursor: pointer;
+}

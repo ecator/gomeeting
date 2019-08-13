@@ -29,6 +29,7 @@ function getMeetings() {
                     for (m of response.data.results) {
                         app.meetings.push(m)
                     }
+                    runSortMeetings()
                 }
             } else {
                 alert("unknown error")
@@ -40,11 +41,11 @@ function getMeetings() {
 // add meeting
 function addMeeting() {
     axios.post("/api/meeting", {
-            make_date: parseInt(app.makeDay ? app.makeDay.replace(/-/g, "") : app.makeDayDef.replace(/-/g, "")),
-            start_time:app.startTime,
-            end_time:app.endTime,
-            room_id:app.roomID,
-            memo:app.memo.toString()
+        make_date: parseInt(app.makeDay ? app.makeDay.replace(/-/g, "") : app.makeDayDef.replace(/-/g, "")),
+        start_time: app.startTime,
+        end_time: app.endTime,
+        room_id: app.roomID,
+        memo: app.memo.toString()
     })
         .then(function (response) {
             if (response.data.hasOwnProperty("status")) {
@@ -73,8 +74,8 @@ function getRooms() {
                     for (r of response.data.results) {
                         app.rooms.push(r)
                     }
-                    if (response.data.results.length>0){
-                        app.roomID=response.data.results[0].id
+                    if (response.data.results.length > 0) {
+                        app.roomID = response.data.results[0].id
                     }
                 }
             } else {
@@ -84,7 +85,7 @@ function getRooms() {
 
 }
 
-// get meetings and set it to app
+// delete meeting and refresh
 function delMeeting(m) {
     axios.delete("/api/meeting", {
         params: {
@@ -109,6 +110,58 @@ function delMeeting(m) {
 
 }
 
+// change sort flg and run sort meetings
+function sortMeetings(sortEl, m) {
+    // find flg and shift position
+    let flg = ""
+    for (let i = 0; i < app.sortFlgs.length; i++) {
+        if (app.sortFlgs[i].id == m) {
+            if (app.sortFlgs[i].flg == "down") {
+                app.sortFlgs[i].flg = "up"
+            } else {
+                app.sortFlgs[i].flg = "down"
+            }
+            flg = app.sortFlgs[i].flg
+            // shift position
+            let tmp = app.sortFlgs[i]
+            app.sortFlgs.splice(i,1)
+            app.sortFlgs.push(tmp)
+            break
+        }
+    }
+    sortEl.setAttribute("class", "fas fa-caret-" + flg)
+    runSortMeetings()
+}
+// run sort meetings
+function runSortMeetings() {
+    for (let i of app.sortFlgs) {
+        //console.log("sort",i.id,i.flg)
+        switch (i.id) {
+            case "maker":
+                if (i.flg == "up") {
+                    app.meetings.sort((a, b) => a.maker.username <= b.maker.username ? -1 : 1)
+                } else {
+                    app.meetings.sort((a, b) => a.maker.username <= b.maker.username ? 1 : -1)
+                }
+                break
+            case "end_time":
+            case "start_time":
+                if (i.flg == "up") {
+                    app.meetings.sort((a, b) => a[i.id] - b[i.id])
+                } else {
+                    app.meetings.sort((a, b) => b[i.id] - a[i.id])
+                }
+                break
+            case "room":
+                if (i.flg == "up") {
+                    app.meetings.sort((a, b) => a.room.id - b.room.id)
+                } else {
+                    app.meetings.sort((a, b) => b.room.id - a.room.id)
+                }
+        }
+    }
+}
+
 // init vue app
 let app = new Vue({
     el: "#app",
@@ -117,11 +170,12 @@ let app = new Vue({
         makeDay: getToDayAsStr(),
         makeDayDef: getToDayAsStr(),
         profile: {},
-        memo:"",
-        startTime:8*60,   // 8:00
-        endTime:17*60+30,   //17:30
-        rooms:[],
-        roomID:-1
+        memo: "",
+        startTime: 8 * 60,   // 8:00
+        endTime: 17 * 60 + 30,   //17:30
+        rooms: [],
+        roomID: -1,
+        sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }]
     },
     methods: {
         deleteMeeting(m) {
@@ -134,8 +188,8 @@ let app = new Vue({
             return ("0" + parseInt(mins / 60)).substr(-2) + ":" + ("0" + (mins % 60)).substr(-2)
         },
         // add new meeting
-        postMeeting(){
-            if (confirm("Add a meeting?")){
+        postMeeting() {
+            if (confirm("Add a meeting?")) {
                 addMeeting()
             }
         }
@@ -145,11 +199,11 @@ let app = new Vue({
             getMeetings()
         }
     },
-    computed:{
-        canAdd(){
-            if (this.roomID>0 && this.startTime>0 && this.endTime>0 && this.memo!="" && this.makeDay!=""){
+    computed: {
+        canAdd() {
+            if (this.roomID > 0 && this.startTime > 0 && this.endTime > 0 && this.memo != "" && this.makeDay != "") {
                 return false
-            }else{
+            } else {
                 return true
             }
         }
@@ -177,7 +231,7 @@ axios.get("/api/user/my")
             alert("unknown error")
         }
     }).then(() => getMeetings())
-        .then(()=>getRooms())
+    .then(() => getRooms())
 
 // init layDate
 laydate.render({
@@ -185,7 +239,7 @@ laydate.render({
     lang: "en",
     value: app.makeDayDef,
     showBottom: true,
-    btns:["now"],
+    btns: ["now"],
     done: function (v, d, end) {
         //console.log(v)
         app.makeDay = v
@@ -202,10 +256,10 @@ laydate.render({
     showBottom: true,
     done: function (v, d, end) {
         //console.log(v)
-        let s=v.split(" - ")
-        let s1=s[0].split(":")
-        let s2=s[1].split(":")
-        app.startTime=parseInt(s1[0])*60+parseInt(s1[1])
-        app.endTime=parseInt(s2[0])*60+parseInt(s2[1])
+        let s = v.split(" - ")
+        let s1 = s[0].split(":")
+        let s2 = s[1].split(":")
+        app.startTime = parseInt(s1[0]) * 60 + parseInt(s1[1])
+        app.endTime = parseInt(s2[0]) * 60 + parseInt(s2[1])
     }
 })

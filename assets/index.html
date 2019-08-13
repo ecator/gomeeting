@@ -7,6 +7,7 @@
         <title>GoMetting</title>
         <link rel="stylesheet" href="/css/bulma.min.css">
         <link rel="stylesheet" href="/css/global.css">
+        <link rel="shortcut icon" href="/img/favicon.ico"> 
         <script src="/js/vue.js"></script>
         <script src="/js/axios.min.js"></script>
         <script src="/js/md5.js"></script>
@@ -33,10 +34,10 @@
                 <div class="container">
                     <table class="table is-fullwidth is-hoverable is-striped">
                         <thead><tr>
-                                <th>room</th>
-                                <th>start time</th>
-                                <th>end time</th>
-                                <th>maker</th>
+                                <th>room <i onclick="sortMeetings(this,'room')" class="fas fa-caret-down"></i></th>
+                                <th>start time <i onclick="sortMeetings(this,'start_time')" class="fas fa-caret-down"></i></th>
+                                <th>end time <i onclick="sortMeetings(this,'end_time')" class="fas fa-caret-down"></i></th>
+                                <th>maker <i onclick="sortMeetings(this,'maker')" class="fas fa-caret-down"></i></th>
                                 <th>memo</th>
                                 <th>operation</th>
                             </tr>
@@ -49,7 +50,8 @@
                                 <td><abbr :title="meeting.maker.username">{{
                                         meeting.maker.name }}</abbr></td>
                                 <td>{{ meeting.memo }}</td>
-                                <td><a class="delete" v-on:click="deleteMeeting(meeting)"
+                                <td><a class="delete"
+                                        v-on:click="deleteMeeting(meeting)"
                                         v-if="profile.id == meeting.maker.id">delete</a></td>
                             </tr>
                         </tbody>
@@ -58,7 +60,8 @@
                                 <td>
                                     <div class="field">
                                         <div class="control has-icons-left">
-                                            <div class="select is-primary is-fullwidth">
+                                            <div class="select is-primary
+                                                is-fullwidth">
                                                 <select v-model:value="roomID">
                                                     <option v-for="room in
                                                         rooms"
@@ -88,17 +91,19 @@
                                 <td>
                                     <div class="field">
                                         <div class="control has-icons-left">
-                                            <input type="text" class="input is-primary"
+                                            <input type="text" class="input
+                                                is-primary"
                                                 v-model:value="memo"
                                                 placeholder="what to do">
-                                                <span class="icon is-left">
-                                                    <i class="fas fa-tasks"></i>
-                                                </span>
+                                            <span class="icon is-left">
+                                                <i class="fas fa-tasks"></i>
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="button is-primary" v-bind:disabled="canAdd"
+                                    <button class="button is-primary"
+                                        v-bind:disabled="canAdd"
                                         v-on:click="postMeeting">add</button>
                                 </td>
                             </tr>
