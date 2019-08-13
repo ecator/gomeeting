@@ -6,9 +6,7 @@ USE `gomeeting`;
 -- Table structure for table `meeting`
 --
 
-DROP TABLE IF EXISTS `meeting`;
-
-CREATE TABLE `meeting` (
+CREATE TABLE IF NOT EXISTS `meeting` (
   `room_id` int(10) unsigned NOT NULL,
   `start_time` int(10) unsigned NOT NULL,
   `end_time` int(10) unsigned NOT NULL,
@@ -23,9 +21,7 @@ CREATE TABLE `meeting` (
 -- Table structure for table `org`
 --
 
-DROP TABLE IF EXISTS `org`;
-
-CREATE TABLE `org` (
+CREATE TABLE IF NOT EXISTS `org` (
   `id` int(10) unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
@@ -36,9 +32,7 @@ CREATE TABLE `org` (
 -- Table structure for table `room`
 --
 
-DROP TABLE IF EXISTS `room`;
-
-CREATE TABLE `room` (
+CREATE TABLE IF NOT EXISTS `room` (
   `id` int(11) NOT NULL,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
@@ -48,9 +42,7 @@ CREATE TABLE `room` (
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
-
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` int(10) unsigned NOT NULL,
   `username` varchar(20) NOT NULL COMMENT 'login name',
   `pw` varchar(100) NOT NULL,
