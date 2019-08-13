@@ -14,9 +14,11 @@ func handleNotFound(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(404)
 	responseFile(w, filepath.Join(frontDir, "404.html"))
 }
+
 func handleIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	responseFile(w, filepath.Join(frontDir, "index.html"))
 }
+
 func handlePassword(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// show password modify page
 	responseFile(w, filepath.Join(frontDir, "password.html"))
