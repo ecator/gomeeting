@@ -29,6 +29,11 @@ func handleShowUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	responseFile(w, filepath.Join(frontDir, "user.html"))
 }
 
+func handleBrowerErr(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.WriteHeader(403)
+	responseFile(w, filepath.Join(frontDir, "brower_err.html"))
+}
+
 func handleLogout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var (
 		resp   jsonResp

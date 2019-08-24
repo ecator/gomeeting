@@ -61,6 +61,7 @@ func StartServer(listenAddr string, listenPort uint, frontendPath string, config
 	router.GET("/logout", decorateAuth(handleLogout))
 	router.GET("/user", decorateAuth(handleShowUser))
 	router.GET("/password", decorateAuth(handlePassword))
+	router.GET("/brower_err", handleBrowerErr)
 
 	// the handler for api
 	router.POST("/api/:target", decorateAuth(apiPost))

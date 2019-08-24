@@ -13,6 +13,13 @@ function getToDayAsStr() {
     return s
 }
 
+// return hours*60 + mins
+function getNowAsMins() {
+    let n = new Date()
+    let s = n.getHours() * 60 + n.getMinutes()
+    return s
+}
+
 // get meetings
 function getMeetings() {
     axios.get("/api/meeting", {
@@ -124,7 +131,7 @@ function sortMeetings(sortEl, m) {
             flg = app.sortFlgs[i].flg
             // shift position
             let tmp = app.sortFlgs[i]
-            app.sortFlgs.splice(i,1)
+            app.sortFlgs.splice(i, 1)
             app.sortFlgs.push(tmp)
             break
         }
@@ -171,8 +178,8 @@ let app = new Vue({
         makeDayDef: getToDayAsStr(),
         profile: {},
         memo: "",
-        startTime: 8 * 60,   // 8:00
-        endTime: 17 * 60 + 30,   //17:30
+        startTime: getNowAsMins(),
+        endTime: getNowAsMins() >= 23 * 60 ? getNowAsMins() : getNowAsMins() + 60,
         rooms: [],
         roomID: -1,
         sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }]
@@ -252,8 +259,20 @@ laydate.render({
     range: true,
     format: "HH:mm",
     lang: "en",
-    value: "08:00 - 17:30",
+    value: `${app.mins2hm(app.startTime)} - ${app.mins2hm(app.endTime)}`,
     showBottom: true,
+    btns: ["confirm"],
+    ready: function (d) {
+        //console.log(d)
+        // hide seconds area
+        for (let i of document.querySelectorAll(".laydate-time-list >li:nth-child(3)")) {
+            i.style.display = "none"
+        }
+        // set width as half
+        for (let i of document.querySelectorAll(".laydate-time-list >li")) {
+            i.style.width = "50%"
+        }
+    },
     done: function (v, d, end) {
         //console.log(v)
         let s = v.split(" - ")
