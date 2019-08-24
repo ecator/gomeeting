@@ -187,7 +187,7 @@ func getNewObjID(o interface{}) uint32 {
 	return 1000
 }
 
-func makeJSONrespMeetings(makeDate uint32, orgID uint32) []jsonRespMeeting {
+func makeJSONrespMeetings(makeDate uint32) []jsonRespMeeting {
 	var (
 		ms  []jsonRespMeeting
 		m   jsonRespMeeting
@@ -211,10 +211,10 @@ func makeJSONrespMeetings(makeDate uint32, orgID uint32) []jsonRespMeeting {
 		FROM meeting
 			inner join user on meeting.maker = user.id
 			inner join room on meeting.room_id=room.id
-			inner join org on user.org_id=org.id 
-		where user.org_id=%d and meeting.make_date=%d
+			inner join org on user.org_id=org.id
+		where meeting.make_date=%d
 	`
-	sql = fmt.Sprintf(sql, orgID, makeDate)
+	sql = fmt.Sprintf(sql, makeDate)
 	ms = []jsonRespMeeting{}
 	m = jsonRespMeeting{}
 	if r, err := dbConn.Query(sql); err == nil {

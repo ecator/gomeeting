@@ -354,7 +354,6 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		status   int
 		o        interface{}
 		objOrg   *org
-		objUser  *user
 		target   string
 	)
 	target = ps.ByName("target")
@@ -376,17 +375,6 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		parseReqToObj(r, ps, o)
 		// check
 		switch target {
-		case "meeting":
-			if id1 > 0 && fun.GetUint32ByName(o, "Maker") != id1 {
-				fun.SetUint32ByName(o, "Maker", id1)
-			}
-			objUser = new(user)
-			objUser.ID = fun.GetUint32ByName(o, "Maker")
-			if err := selectObjByID(objUser); err != nil {
-				// user not found
-				status = 9003
-				resp = jsonResp{status, msg.GetMsg(status, "user")}
-			}
 		case "user":
 			if fun.GetUint32ByName(o, "ID") == 0 {
 				fun.SetUint32ByName(o, "ID", id1)
@@ -414,7 +402,7 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			switch target {
 			case "meeting":
 				status = 0
-				resp = jsonResp{status, makeJSONrespMeetings(fun.GetUint32ByName(o, "MakeDate"), objUser.OrgID)}
+				resp = jsonResp{status, makeJSONrespMeetings(fun.GetUint32ByName(o, "MakeDate"))}
 			case "rooms":
 				status = 0
 				resp = jsonResp{status, makeJSONrespRooms()}
