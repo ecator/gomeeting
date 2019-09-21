@@ -11,3 +11,7 @@
 .fa-caret-down,.fa-caret-up{
     cursor: pointer;
 }
+
+html{
+    overflow-y: auto;
+}
