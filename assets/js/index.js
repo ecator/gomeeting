@@ -200,6 +200,15 @@ let app = new Vue({
                 addMeeting()
             }
         }
+        ,
+        // check if can delete one meeting
+        canDel(m) {
+            if (this.profile.id == 0 || this.profile.id == m.maker.id || parseInt(this.profile.level) < parseInt(m.maker.level)) {
+                return true
+            } else {
+                return false
+            }
+        }
     },
     watch: {
         makeDay(v) {

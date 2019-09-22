@@ -24,6 +24,17 @@ func handlePassword(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	responseFile(w, filepath.Join(frontDir, "password.html"))
 }
 
+func handleAdmin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	// show admin page
+	if id1, err := getThisUserID(r); err != nil {
+		handleNotFound(w, r)
+	} else if id1 != 0 {
+		handleNotFound(w, r)
+	} else {
+		responseFile(w, filepath.Join(frontDir, "admin.html"))
+	}
+}
+
 func handleShowUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// show user profile page
 	responseFile(w, filepath.Join(frontDir, "user.html"))

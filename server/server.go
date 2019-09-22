@@ -61,6 +61,7 @@ func StartServer(listenAddr string, listenPort uint, frontendPath string, config
 	router.GET("/logout", decorateAuth(handleLogout))
 	router.GET("/user", decorateAuth(handleShowUser))
 	router.GET("/password", decorateAuth(handlePassword))
+	router.GET("/admin", decorateAuth(handleAdmin))
 	router.GET("/brower_err", handleBrowerErr)
 
 	// the handler for api
@@ -122,7 +123,7 @@ func decorateAuth(fn func(w http.ResponseWriter, r *http.Request, ps httprouter.
 			fn(w, r, ps)
 			return
 		}
-		// auth error
+		// auth errors
 		status = 9000
 		resp = jsonResp{status, msg.GetMsg(status)}
 		// redirect

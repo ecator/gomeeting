@@ -17,7 +17,7 @@
     </head>
     <body>
         <section id="nav">
-            <my-nav></my-nav>
+            <my-nav :is-admin="isAdmin"></my-nav>
         </section>
         <section>
             <div class="container" id="app">
@@ -53,7 +53,7 @@
                                 <td>{{ meeting.memo }}</td>
                                 <td><a class="delete"
                                         v-on:click="deleteMeeting(meeting)"
-                                        v-if="profile.id == meeting.maker.id">delete</a></td>
+                                        v-if="canDel(meeting)">delete</a></td>
                             </tr>
                         </tbody>
                         <tfoot>

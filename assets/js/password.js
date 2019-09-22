@@ -31,14 +31,21 @@ function getUser() {
 let password = new Vue({
     el: "#password",
     data: {
-        password1:"",
-        password2:""
+        password1: "",
+        password2: ""
     },
     methods: {
         modify: function () {
             if (!confirm("Change your password?")) return
-            axios.put("/api/user/"+profile.profile.id, {
-                password: md5(this.password1) ,
+            let pw = ''
+            if (profile.profile.id == 0) {
+                // must plain text if root
+                pw = this.password1
+            } else {
+                pw = md5(this.password1)
+            }
+            axios.put("/api/user/" + profile.profile.id, {
+                password: pw
             })
                 .then(function (response) {
                     //console.log(response.data)
@@ -49,6 +56,8 @@ let password = new Vue({
                         } else {
                             //ok
                             alert("success")
+                            // relogin
+                            location.href="/logout"
                         }
                     } else {
                         // unknown error
@@ -63,7 +72,7 @@ let password = new Vue({
     },
     computed: {
         canModify: function () {
-            if (this.password1==this.password2 && this.password1!="" && this.password1.length>=6) {
+            if (this.password1 == this.password2 && this.password1 != "" && this.password1.length >= 6) {
                 return false
             } else {
                 return true
