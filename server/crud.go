@@ -256,3 +256,56 @@ func makeJSONrespRooms() []jsonRespRoom {
 	}
 	return rs
 }
+func makeJSONrespOrgs() []jsonRespOrg {
+	var (
+		sql string
+		r   jsonRespOrg
+		rs  []jsonRespOrg
+	)
+	sql = "select * from org"
+	if ret, err := dbConn.Query(sql); err == nil {
+		r = jsonRespOrg{}
+		rs = []jsonRespOrg{}
+		for i := 0; i < len(ret); i++ {
+			r.ID = fun.Str2Uint32(ret[i]["id"])
+			r.Name = ret[i]["name"]
+			rs = append(rs, r)
+		}
+	}
+	return rs
+}
+func makeJSONrespUsers() []jsonRespUser {
+	var (
+		sql string
+		r   jsonRespUser
+		rs  []jsonRespUser
+	)
+	sql = `
+	SELECT
+		user.id as id
+	   ,user.username as username
+	   ,user.level as level
+	   ,user.name as name
+	   ,user.email as email
+	   ,user.org_id as org_id
+	   ,org.name as org_name
+	   FROM user
+	   left join org on user.org_id = org.id
+	`
+	if ret, err := dbConn.Query(sql); err == nil {
+		r = jsonRespUser{}
+		rs = []jsonRespUser{}
+		for i := 0; i < len(ret); i++ {
+			r.ID = fun.Str2Uint32(ret[i]["id"])
+			r.Username = ret[i]["username"]
+			r.Level = fun.Str2Uint32(ret[i]["level"])
+			r.Name = ret[i]["name"]
+			r.Email = ret[i]["email"]
+			r.Username = ret[i]["username"]
+			r.Org.ID = fun.Str2Uint32(ret[i]["org_id"])
+			r.Org.Name = ret[i]["org_name"]
+			rs = append(rs, r)
+		}
+	}
+	return rs
+}

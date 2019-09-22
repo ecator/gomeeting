@@ -360,11 +360,11 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	switch target {
 	case "meeting":
 		o = new(meeting)
-	case "user":
+	case "user", "users":
 		o = new(user)
 	case "room", "rooms":
 		o = new(room)
-	case "org":
+	case "org", "orgs":
 		o = new(org)
 	default:
 		status = 9004
@@ -375,7 +375,7 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		parseReqToObj(r, ps, o)
 		// check
 		switch target {
-		case "user":
+		case "user", "users":
 			if fun.GetUint32ByName(o, "ID") == 0 {
 				fun.SetUint32ByName(o, "ID", id1)
 			}
@@ -406,6 +406,12 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			case "rooms":
 				status = 0
 				resp = jsonResp{status, makeJSONrespRooms()}
+			case "orgs":
+				status = 0
+				resp = jsonResp{status, makeJSONrespOrgs()}
+			case "users":
+				status = 0
+				resp = jsonResp{status, makeJSONrespUsers()}
 			default:
 				if err := selectObjByID(o); err == nil {
 					// success
