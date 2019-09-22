@@ -53,3 +53,29 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Insert root/root account into `user`
+--
+
+INSERT INTO `user`
+  SELECT 0 , 'root', md5( 'root' ) , 0, 0, 'root', 'root@example.com'
+  FROM dual
+  WHERE NOT EXISTS (
+    SELECT id
+    FROM `user`
+    WHERE id = 0
+  );
+
+--
+-- Insert 0/root org into `org`
+--
+
+INSERT INTO `org`
+  SELECT 0 , 'root'
+  FROM dual
+  WHERE NOT EXISTS (
+    SELECT id
+    FROM `org`
+    WHERE id = 0
+  );
