@@ -19,12 +19,21 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type onlineUser struct {
+	id      uint32
+	expires time.Time
+}
+
 var (
 	conf        *config.Config
 	logger      *loggers.Logger
 	dbConn      *db.DB
 	frontDir    string
-	onlineUsers map[string]uint32
+	onlineUsers map[string]onlineUser
+)
+
+const (
+	sessionExpires = time.Hour * 24 * 30
 )
 
 // StartServer starts server
@@ -79,8 +88,7 @@ func StartServer(listenAddr string, listenPort uint, frontendPath string, config
 
 	// make the super token to control all
 	token := fun.GetMd5Str(time.Now().String() + "root")
-	onlineUsers = make(map[string]uint32)
-	onlineUsers[token] = 0
+	addOnlineUser(token, 0, time.Now().Add(time.Hour*24*99999))
 	// start http server
 	logger.Info("Starting service...")
 	errCh := make(chan error)
@@ -160,8 +168,11 @@ func redirectLocation(w http.ResponseWriter, urlstr string) {
 func getThisUserID(r *http.Request) (uint32, error) {
 	var status int
 	if c, err := r.Cookie("auth"); err == nil {
-		if id, has := onlineUsers[c.Value]; has == true {
-			return id, nil
+		if user, has := onlineUsers[c.Value]; has == true {
+			if user.expires.After(time.Now()) {
+				return user.id, nil
+			}
+			delete(onlineUsers, c.Value)
 		}
 		// auth expired
 		status = 9001
@@ -170,4 +181,12 @@ func getThisUserID(r *http.Request) (uint32, error) {
 		status = 9000
 	}
 	return 0, errors.New(msg.GetMsg(status))
+}
+
+func addOnlineUser(token string, id uint32, expires time.Time) {
+	if onlineUsers == nil {
+		onlineUsers = make(map[string]onlineUser)
+	}
+	user := onlineUser{id, expires}
+	onlineUsers[token] = user
 }

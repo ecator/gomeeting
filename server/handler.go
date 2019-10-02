@@ -90,12 +90,12 @@ func handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 				if u1.Pw == u.Pw {
 					//login ok
 					token := fun.GetMd5Str(time.Now().String() + u1.Username)
-					onlineUsers[token] = u1.ID
+					addOnlineUser(token, u1.ID, time.Now().Add(sessionExpires))
 					// add cookie
 					cookie := new(http.Cookie)
 					cookie.Name = "auth"
 					cookie.Value = token
-					cookie.Expires = time.Now().Add(time.Hour * 24 * 365 * 100)
+					cookie.Expires = time.Now().Add(sessionExpires)
 					http.SetCookie(w, cookie)
 					status = 0
 					resp = jsonResp{status, msg.GetMsg(1000, "login")}
