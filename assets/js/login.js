@@ -30,14 +30,19 @@ let app = new Vue({
                     console.error(error)
                 })
 
+        },
+        keypress: function(e){
+            if (e.keyCode==13 && this.canLogin){
+                this.login()
+            }
         }
     },
     computed: {
         canLogin: function () {
             if (this.username != "" && this.password != "") {
-                return false
-            } else {
                 return true
+            } else {
+                return false
             }
         }
     }

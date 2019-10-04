@@ -31,7 +31,7 @@
         <section>
             <div class="contianer">
                 <div class="columns is-mobile is-centered">
-                    <div class="cloumn is-4" id="login">
+                    <div class="cloumn is-4" id="login" @keypress="keypress($event)">
                         <div class="field">
                             <p class="control has-icons-left has-icons-right">
                                 <input class="input is-large" type="text"
@@ -57,7 +57,7 @@
                                 <button class="button is-primary is-large
                                     is-fullwidth"
                                     v-on:click="login"
-                                    v-bind:disabled="canLogin">
+                                    v-bind:disabled="!canLogin">
                                     Login
                                 </button>
                             </p>
