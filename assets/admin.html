@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>GoMeeting-Admin</title>
+        <link rel="stylesheet" href="/css/bulma.min.css">
+        <link rel="stylesheet" href="/css/global.css">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <script src="/js/check.js"></script>
+        <script src="/js/vue.js"></script>
+        <script src="/js/axios.min.js"></script>
+        <script src="/js/fontawesome.js"></script>
+    </head>
+    <body>
+        <section id="nav">
+            <my-nav :is-admin="isAdmin"></my-nav>
+        </section>
+        <div id="tabs" class="tabs is-centered is-boxed">
+            <ul>
+                <li :class="{'is-active':userActive}"
+                    @click="activateTab('user')">
+                    <a>
+                        <span class="icon is-small"><i class="fas fa-user"
+                                aria-hidden="true"></i></span>
+                        <span>user</span>
+                    </a>
+                </li>
+                <li :class="{'is-active':orgActive}"
+                    @click="activateTab('org')">
+                    <a>
+                        <span class="icon is-small"><i class="fas fa-map-pin"
+                                aria-hidden="true"></i></span>
+                        <span>org</span>
+                    </a>
+                </li>
+                <li :class="{'is-active':roomActive}"
+                    @click="activateTab('room')">
+                    <a>
+                        <span class="icon is-small"><i class="fas fa-handshake"
+                                aria-hidden="true"></i></span>
+                        <span>room</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <section id="user" v-show="isActive">
+            <div class="columns is-mobile is-centered">
+                <div class="column is-3">
+                    <nav class="panel">
+                        <p class="panel-heading">
+                            users
+                        </p>
+                        <div class="panel-block">
+                            <p class="control has-icons-left">
+                                <input v-model:value="filter" class="input
+                                    is-small" type="text"
+                                    placeholder="filter">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="userList">
+                            <a class="panel-block" v-for="o in list"
+                                :class="{'is-active':o.isActive}"
+                                @click="prepareModify(o)" v-show="o.isShow">
+                                <span class="panel-icon">
+                                    <i class="fas fa-user" aria-hidden="true"></i>
+                                </span>
+                                <span v-if="o.id==-1" class="has-text-primary">NEW_USER</span>
+                                <span v-else>{{ o.name }}</span>
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+                <div class="column is-6">
+                    <div class="container">
+                        <div class="field" v-show="activeObj.id!=-1">
+                            <label class="label">ID</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.id" placeholder="id"
+                                    disabled>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">UserName</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.username"
+                                    placeholder="username"
+                                    :disabled="activeObj.id!=-1">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control">
+                                <input class="input is-danger" type="text"
+                                    v-model="activeObj.password"
+                                    placeholder="password">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Level</label>
+                            <div class="control">
+                                <input class="input" type="number"
+                                    v-model.number="activeObj.level"
+                                    placeholder="level">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Org</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select
+                                        v-model.number:value="activeObj.org.id">
+                                        <option v-for="org in orgs"
+                                            :value="org.id">{{ org.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.name"
+                                    placeholder="name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.email"
+                                    placeholder="email">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button v-if="activeObj.id!=-1"
+                                    onclick="modObj('user')"
+                                    class="button is-primary is-fullwidth">modify</button>
+                                <button v-else="activeObj.id==-1"
+                                    onclick="addObj('user')"
+                                    class="button is-primary is-fullwidth">add</button>
+                            </div>
+                        </div>
+                        <div class="field" v-if="activeObj.id!=-1">
+                            <div class="control">
+                                <button
+                                    onclick="delObj('user')"
+                                    class="button is-danger is-fullwidth">delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="org" v-show="isActive">
+            <div class="columns is-mobile is-centered">
+                <div class="column is-3">
+                    <nav class="panel">
+                        <p class="panel-heading">
+                            orgs
+                        </p>
+                        <div class="panel-block">
+                            <p class="control has-icons-left">
+                                <input v-model:value="filter" class="input
+                                    is-small" type="text"
+                                    placeholder="filter">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="orgList">
+                            <a class="panel-block" v-for="o in list"
+                                :class="{'is-active':o.isActive}"
+                                @click="prepareModify(o)" v-show="o.isShow">
+                                <span class="panel-icon">
+                                    <i class="fas fa-map-pin"
+                                        aria-hidden="true"></i>
+                                </span>
+                                <span v-if="o.id==-1" class="has-text-primary">NEW_ORG</span>
+                                <span v-else>{{ o.name }}</span>
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+                <div class="column is-6">
+                    <div class="container">
+                        <div class="field" v-show="activeObj.id!=-1">
+                            <label class="label">ID</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.id" placeholder="id"
+                                    disabled>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.name" placeholder="name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button v-if="activeObj.id!=-1"
+                                    onclick="modObj('org')"
+                                    class="button is-primary is-fullwidth">modify</button>
+                                <button v-else
+                                    onclick="addObj('org')"
+                                    class="button is-primary is-fullwidth">add</button>
+                            </div>
+                        </div>
+                        <div class="field" v-if="activeObj.id!=-1">
+                            <div class="control">
+                                <button
+                                    onclick="delObj('org')"
+                                    class="button is-danger is-fullwidth">delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="room" v-show="isActive">
+            <div class="columns is-mobile is-centered">
+                <div class="column is-3">
+                    <nav class="panel">
+                        <p class="panel-heading">
+                            rooms
+                        </p>
+                        <div class="panel-block">
+                            <p class="control has-icons-left">
+                                <input v-model:value="filter" class="input
+                                    is-small" type="text"
+                                    placeholder="filter">
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="roomList">
+                            <a class="panel-block" v-for="o in list"
+                                :class="{'is-active':o.isActive}"
+                                @click="prepareModify(o)" v-show="o.isShow">
+                                <span class="panel-icon">
+                                    <i class="fas fa-handshake"
+                                        aria-hidden="true"></i>
+                                </span>
+                                <span v-if="o.id==-1" class="has-text-primary">NEW_ROOM</span>
+                                <span v-else>{{ o.name }}</span>
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+                <div class="column is-6">
+                    <div class="container">
+                        <div class="field" v-show="activeObj.id!=-1">
+                            <label class="label">ID</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.id" placeholder="id"
+                                    disabled>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                <input class="input" type="text"
+                                    v-model="activeObj.name" placeholder="name">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button v-if="activeObj.id!=-1"
+                                    onclick="modObj('room')"
+                                    class="button is-primary is-fullwidth">modify</button>
+                                <button v-else
+                                    onclick="addObj('room')"
+                                    class="button is-primary is-fullwidth">add</button>
+                            </div>
+                        </div>
+                        <div class="field" v-if="activeObj.id!=-1">
+                            <div class="control">
+                                <button
+                                    onclick="delObj('room')"
+                                    class="button is-danger is-fullwidth">delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="footer">
+            <my-footer></my-footer>
+        </section>
+        <script src="/js/admin.js"></script>
+        <script src="/js/nav.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

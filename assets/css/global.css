@@ -1,3 +1,7 @@
+html{
+    overflow-y: auto;
+}
+
 #footer{
     margin-top: 20px;
 }
@@ -12,6 +16,31 @@
     cursor: pointer;
 }
 
-html{
+.userList{
+    border:0px solid red;
+    height:26em;
     overflow-y: auto;
 }
+
+.orgList,.roomList{
+    border:0px solid red;
+    height:13em;
+    overflow-y: auto;
+}
+
+/*
+// special theme
+.icon{
+    background: url('/img/theme_icon.png') no-repeat;
+    background-size: 90%;
+    background-position: center;
+}
+.icon svg{
+    display: none;
+}
+html{
+    background: url('/img/theme_bg.jpg') repeat-y;
+    background-size: cover;
+    background-position: center;
+}
+*/
