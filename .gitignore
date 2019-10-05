@@ -3,7 +3,13 @@
 .DS_Store
 config.yml
 server.log
-/backend/backend_test.go
 /.vscode/
 *.code-workspace
 /vendor/
+/assets/css/bulma.min.css
+/assets/js/laydate/
+/assets/js/axios.min.js
+/assets/js/axios.min.map
+/assets/js/fontawesome.min.js
+/assets/js/md5.min.js
+/assets/js/vue.min.js
