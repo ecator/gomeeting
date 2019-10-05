@@ -12,7 +12,7 @@ It's a very simple meeting room booking system written by go language for learni
  
 ### Steps
 ```shell
-go get go get github.com/ecator/gomeeting
+go get github.com/ecator/gomeeting
 cd ~/go/src/github.com/ecator/gomeeting
 make
 ```
