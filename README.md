@@ -5,7 +5,10 @@ It's a very simple meeting room booking system written by go language for learni
 ## Build
 ### Required
  - go >= 1.12 (must)
- - GNU Make (optional)
+ - glide (must)
+ - curl (must)
+ - unzip (must)
+ - GNU Make (must)
  
 ### Steps
 ```shell
@@ -15,13 +18,11 @@ make
 ```
 Now the `bin/gomeeting` is generated and you can run it.
 
-If you don't have `make` command,you can run `mkdir bin && go build -o bin/gomeeting -ldflags "-w" main.go` to build it.It's the same to `make`.
-
 ## Usage
 ### Dependencies
 - MySQL(MariaDB) (must)
   - Now it's only support mysql
-- A modern browser (Chrome or Firefox is recommended)
+- A modern browser (must Chrome or Firefox)
 
 ### Start Server
 If you are firstly running gomeeting you must install MySQL and create a database named `gomeeting`.
@@ -67,7 +68,9 @@ Usage of bin/gomeeting:
     	The listen port (default 7728)
 ```
 ### Administrator
-Now there is no ui for managing the service,but you can use RESTful APIs directly within the super token.
+The `script/create.sql` will add a root user for managing the service. So you can open `http://server_ip:7728` and login as root using `username:root;password:root` easily.
+
+Otherwise there is another way to manage the service with no ui. You can use RESTful APIs directly within the super token.
 
 Like this.
 
