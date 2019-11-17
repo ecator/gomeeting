@@ -46,9 +46,9 @@ func insertObj(o interface{}) error {
 			err = errors.New(msg.GetMsg(9007, "memo"))
 		} else if fun.GetUint32ByName(o, "MakeDate") < 19000101 || fun.GetUint32ByName(o, "MakeDate") > 99991231 {
 			err = errors.New(msg.GetMsg(9012, "make_date", "19000101", "99991231"))
-		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <=%[2]d and end_time>=%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
+		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <%[2]d and end_time>=%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "end_time"))
-		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <=%[2]d and end_time>=%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
+		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <=%[2]d and end_time>%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "start_time"))
 		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%d and  start_time >%d and end_time<%d and make_date=%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "start_time - end_time"))
