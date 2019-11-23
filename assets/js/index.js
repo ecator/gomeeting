@@ -190,6 +190,34 @@ let app = new Vue({
                 delMeeting(m)
             }
         },
+        extendMeeting(m) {
+            this.roomID = m.room.id
+            this.memo = `forked from ${m.room.name}(${this.mins2hm(m.start_time)} - ${this.mins2hm(m.end_time)})`
+            let start_time = m.end_time
+            let end_time = start_time + 30
+            let ctl_time = document.getElementById("timeRange")
+            let ctl_memo = document.getElementById("memo")
+            let ms = this.meetings.filter((i) => i.room.id == m.room.id && i.start_time >= m.start_time)
+            ms.sort((a, b) => a['start_time'] - b['start_time'])
+            let msg = ""
+            if (ms.length == 1 || ms[1].start_time - ms[0].end_time >= 30) {
+                start_time = ms[0].end_time
+                end_time = start_time + 30
+                msg = "You can extend this meeting by at least 30 minutes."
+            } else if (ms[1].start_time - ms[0].end_time >= 10) {
+                start_time = ms[0].end_time
+                end_time = ms[1].start_time
+                msg = `You can extend this meeting by up to ${end_time - start_time} minutes.`
+            } else {
+                msg = "Sorry,you can't extend this meeting because of another one coming up!\nYou may try to change a room."
+            }
+            this.startTime = start_time
+            this.endTime = end_time
+            ctl_time.value = this.mins2hm(this.startTime) + " - " + this.mins2hm(this.endTime)
+            ctl_memo.focus()
+            setTimeout(() => ctl_memo.select(), 100)
+            alert(msg)
+        },
         // convert mins to hh:mm
         mins2hm(mins) {
             return ("0" + parseInt(mins / 60)).substr(-2) + ":" + ("0" + (mins % 60)).substr(-2)

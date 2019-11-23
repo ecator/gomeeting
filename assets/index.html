@@ -35,10 +35,17 @@
                 <div class="container">
                     <table class="table is-fullwidth is-hoverable is-striped">
                         <thead><tr>
-                                <th>room <i onclick="sortMeetings(this,'room')" class="fas fa-caret-down"></i></th>
-                                <th>start time <i onclick="sortMeetings(this,'start_time')" class="fas fa-caret-down"></i></th>
-                                <th>end time <i onclick="sortMeetings(this,'end_time')" class="fas fa-caret-down"></i></th>
-                                <th>maker <i onclick="sortMeetings(this,'maker')" class="fas fa-caret-down"></i></th>
+                                <th>room <i onclick="sortMeetings(this,'room')"
+                                        class="fas fa-caret-down"></i></th>
+                                <th>start time <i
+                                        onclick="sortMeetings(this,'start_time')"
+                                        class="fas fa-caret-down"></i></th>
+                                <th>end time <i
+                                        onclick="sortMeetings(this,'end_time')"
+                                        class="fas fa-caret-down"></i></th>
+                                <th>maker <i
+                                        onclick="sortMeetings(this,'maker')"
+                                        class="fas fa-caret-down"></i></th>
                                 <th>memo</th>
                                 <th>operation</th>
                             </tr>
@@ -51,9 +58,14 @@
                                 <td><abbr :title="meeting.maker.username">{{
                                         meeting.maker.name }}</abbr></td>
                                 <td>{{ meeting.memo }}</td>
-                                <td><a class="delete"
+                                <td><a class="button is-small"
+                                        v-on:click="extendMeeting(meeting)"><i
+                                            class="fas fa-utensils"></i></a>
+                                    <a class="button is-small is-danger
+                                        is-outlined"
                                         v-on:click="deleteMeeting(meeting)"
-                                        v-if="canDel(meeting)">delete</a></td>
+                                        v-if="canDel(meeting)"><i class="far
+                                            fa-trash-alt"></i></a></td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -92,7 +104,8 @@
                                 <td>
                                     <div class="field">
                                         <div class="control has-icons-left">
-                                            <input type="text" class="input
+                                            <input type="text" id="memo"
+                                                class="input
                                                 is-primary"
                                                 v-model:value="memo"
                                                 placeholder="what to do">
