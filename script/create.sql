@@ -55,6 +55,15 @@ CREATE TABLE IF NOT EXISTS `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
+-- Table structure for table `notification`
+--
+
+CREATE TABLE IF NOT EXISTS `notification` (
+  `message` varchar(3072) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+--
 -- Insert root/root account into `user`
 --
 

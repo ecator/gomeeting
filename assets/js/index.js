@@ -92,6 +92,25 @@ function getRooms() {
 
 }
 
+// get notification
+function getNotification() {
+    axios.get("/api/notification")
+        .then(function (response) {
+            if (response.data.hasOwnProperty("status")) {
+                if (response.data.status == 0) {
+                    app.notification = response.data.results.message
+                } else if (response.data.status == 9003) {
+                    // no notification
+                    app.notification = ""
+                } else {
+                    alert(response.data.results)
+                }
+            } else {
+                alert("unknown error")
+            }
+        })
+
+}
 // delete meeting and refresh
 function delMeeting(m) {
     axios.delete("/api/meeting", {
@@ -182,7 +201,9 @@ let app = new Vue({
         endTime: getNowAsMins() >= 23 * 60 ? getNowAsMins() : getNowAsMins() + 60,
         rooms: [],
         roomID: -1,
-        sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }]
+        sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }],
+        notification: "",
+        notificationInput: { rows: 1, text: "" },
     },
     methods: {
         deleteMeeting(m) {
@@ -236,11 +257,46 @@ let app = new Vue({
             } else {
                 return false
             }
+        },
+        // delete notification
+        delNotification() {
+            if (confirm("Delete this notification?")) {
+                axios.delete("/api/notification")
+                    .then(() => getNotification())
+            }
+        },
+        // add notification
+        addNotification() {
+            axios.post("/api/notification", { message: this.notificationInput.text })
+                .then(function (response) {
+                    if (response.data.hasOwnProperty("status")) {
+                        if (response.data.status != 0) {
+                            alert(response.data.results)
+                        } else {
+                            getNotification()
+                        }
+                    } else {
+                        alert("unknown error")
+                    }
+                })
+        },
+        // start input notification
+        notificationMousemove() {
+            this.notificationInput.rows = 5
+        },
+        // notification mouseout
+        notificationMouseout() {
+            this.notificationInput.rows = 1
         }
     },
     watch: {
         makeDay(v) {
             getMeetings()
+        },
+        notification(v) {
+            if (v!="") {
+                this.notificationInput.text = v
+            }
         }
     },
     computed: {
@@ -250,6 +306,12 @@ let app = new Vue({
             } else {
                 return true
             }
+        },
+        unescapeNotification() {
+            return this.notification.replace(/\n/g, "<br />")
+        },
+        canAddNotification() {
+            return this.notificationInput.text ? true : false
         }
     }
 })
@@ -276,6 +338,7 @@ axios.get("/api/user/my")
         }
     }).then(() => getMeetings())
     .then(() => getRooms())
+    .then(() => getNotification())
 
 // init layDate
 laydate.render({

@@ -31,3 +31,7 @@ type jsonRespMeeting struct {
 	Memo      string       `json:"memo"`
 	MakeDate  uint32       `json:"make_date"`
 }
+
+type jsonRespNotification struct {
+	Message string `json:"message"`
+}

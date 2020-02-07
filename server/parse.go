@@ -25,6 +25,7 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 		maker     string
 		memo      string
 		makeDate  string
+		message   string
 		b         []byte
 	)
 
@@ -42,6 +43,7 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	maker = ps.ByName("maker")
 	memo = ps.ByName("memo")
 	makeDate = ps.ByName("makeDate")
+	message = ps.ByName("message")
 
 	// check if not found then get from formvalue
 	if id == "" {
@@ -82,6 +84,9 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	}
 	if makeDate == "" {
 		makeDate = r.FormValue("make_date")
+	}
+	if message == "" {
+		message = r.FormValue("message")
 	}
 	// set value to obj
 
@@ -124,6 +129,9 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	}
 	if makeDate != "" {
 		fun.SetUint32ByName(o, "MakeDate", fun.Str2Uint32(makeDate))
+	}
+	if message != "" {
+		fun.SetStrByName(o, "Message", message)
 	}
 
 	// try to parse from body

@@ -22,6 +22,22 @@
         <section>
             <div class="container" id="app">
                 <div class="columns is-mobile is-centered">
+                    <div class="column is-10">
+                        <div v-if="notification" class="notification">
+                            <button v-if="profile.id == 0"
+                                v-on:click="delNotification" class="delete"></button>
+                            <span v-html="unescapeNotification"></span>
+                        </div>
+                        <div v-else-if="profile.id == 0" @mousemove="notificationMousemove" @mouseout="notificationMouseout" class="field">
+                                <textarea class="textarea" :rows="notificationInput.rows"
+                                    placeholder="notification here" v-model="notificationInput.text"></textarea>
+                            <div class="buttons is-centered">
+                                <button v-show="canAddNotification" @click="addNotification" class="button is-primary">Notify</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns is-mobile is-centered">
                     <div class="column is-3">
                         <div class="control has-icons-left">
                             <input type="text" class="input is-info is-medium"

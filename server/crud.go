@@ -29,6 +29,12 @@ func insertObj(o interface{}) error {
 		} else {
 			sql = fmt.Sprintf("insert into org values (%d,'%s')", fun.GetUint32ByName(o, "ID"), fun.GetStrByName(o, "Name"))
 		}
+	case *notification:
+		if fun.GetStrByName(o, "Message") == "" {
+			err = errors.New(msg.GetMsg(9007, "message"))
+		} else {
+			sql = fmt.Sprintf("insert into notification values ('%s')", fun.GetStrByName(o, "Message"))
+		}
 	case *room:
 		if fun.GetStrByName(o, "Name") == "" {
 			err = errors.New(msg.GetMsg(9007, "name"))
@@ -77,6 +83,8 @@ func deleteObj(o interface{}) error {
 		sql = fmt.Sprintf("delete from org where id=%d", fun.GetUint32ByName(o, "ID"))
 	case *room:
 		sql = fmt.Sprintf("delete from room where id=%d", fun.GetUint32ByName(o, "ID"))
+	case *notification:
+		sql = fmt.Sprintf("truncate notification")
 	case *meeting:
 		sql = fmt.Sprintf("delete from meeting where room_id=%d and start_time=%d and end_time=%d and make_date=%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))
 	default:

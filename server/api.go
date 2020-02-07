@@ -12,17 +12,18 @@ import (
 
 func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var (
-		resp        jsonResp
-		respRoom    jsonRespRoom
-		respUser    jsonRespUser
-		respOrg     jsonRespOrg
-		respMeeting jsonRespMeeting
-		objOrg      *org
-		objRoom     *room
-		objUser     *user
-		status      int
-		o           interface{}
-		target      string
+		resp             jsonResp
+		respRoom         jsonRespRoom
+		respUser         jsonRespUser
+		respOrg          jsonRespOrg
+		respNotification jsonRespNotification
+		respMeeting      jsonRespMeeting
+		objOrg           *org
+		objRoom          *room
+		objUser          *user
+		status           int
+		o                interface{}
+		target           string
 	)
 	target = ps.ByName("target")
 	switch target {
@@ -34,6 +35,8 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		o = new(room)
 	case "org":
 		o = new(org)
+	case "notification":
+		o = new(notification)
 	default:
 		status = 9004
 		resp = jsonResp{status, msg.GetMsg(status, "target")}
@@ -47,7 +50,7 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			if id1 > 0 && fun.GetUint32ByName(o, "Maker") != id1 {
 				fun.SetUint32ByName(o, "Maker", id1)
 			}
-		case "user", "room", "org":
+		case "user", "room", "org", "notification":
 			// must root
 			if id1 != 0 {
 				// no privilege
@@ -127,6 +130,9 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 					case "org":
 						respOrg = jsonRespOrg{fun.GetUint32ByName(o, "ID"), fun.GetStrByName(o, "Name")}
 						resp = jsonResp{status, respOrg}
+					case "notification":
+						respNotification = jsonRespNotification{fun.GetStrByName(o, "Message")}
+						resp = jsonResp{status, respNotification}
 					}
 				} else {
 					// fail
@@ -158,6 +164,8 @@ func apiDel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		o = new(room)
 	case "org":
 		o = new(org)
+	case "notification":
+		o = new(notification)
 	default:
 		status = 9004
 		resp = jsonResp{status, msg.GetMsg(status, "target")}
@@ -180,6 +188,13 @@ func apiDel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 					resp = jsonResp{status, msg.GetMsg(status, "id")}
 				}
 			} else {
+				// no privilege
+				status = 9004
+				resp = jsonResp{status, msg.GetMsg(status, "privilege")}
+			}
+		case "notification":
+			// must root
+			if id1 != 0 {
 				// no privilege
 				status = 9004
 				resp = jsonResp{status, msg.GetMsg(status, "privilege")}
@@ -366,6 +381,8 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		o = new(room)
 	case "org", "orgs":
 		o = new(org)
+	case "notification":
+		o = new(notification)
 	default:
 		status = 9004
 		resp = jsonResp{status, msg.GetMsg(status, "target")}
@@ -412,6 +429,15 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			case "users":
 				status = 0
 				resp = jsonResp{status, makeJSONrespUsers()}
+			case "notification":
+				if o, err := selectNotification("select * from notification limit 1"); err == nil {
+					status = 0
+					resp = jsonResp{status, jsonRespNotification{fun.GetStrByName(o, "Message")}}
+				} else {
+					// no notification
+					status = 9003
+					resp = jsonResp{status, msg.GetMsg(status, target)}
+				}
 			default:
 				if err := selectObjByID(o); err == nil {
 					// success
