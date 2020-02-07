@@ -14,6 +14,7 @@
         <script src="/js/md5.min.js"></script>
         <script src="/js/laydate/laydate.js"></script>
         <script src="/js/fontawesome.min.js"></script>
+        <script src="/js/markdown.min.js"></script>
     </head>
     <body>
         <section id="nav">
@@ -26,7 +27,7 @@
                         <div v-if="notification" class="notification">
                             <button v-if="profile.id == 0"
                                 v-on:click="delNotification" class="delete"></button>
-                            <span v-html="unescapeNotification"></span>
+                            <div class="content" v-html="parseNotification"></div>
                         </div>
                         <div v-else-if="profile.id == 0" @mousemove="notificationMousemove" @mouseout="notificationMouseout" class="field">
                                 <textarea class="textarea" :rows="notificationInput.rows"

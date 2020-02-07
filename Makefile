@@ -17,15 +17,17 @@ md5 = $(js_dir)/md5.min.js
 md5_src = $(tmp_dir)/js-md5-0.7.3/build/md5.min.js
 vue = $(js_dir)/vue.min.js
 vue_src = $(tmp_dir)/vue-2.6.10/dist/vue.min.js
+md2html = $(js_dir)/markdown.min.js
+md2html_src = $(tmp_dir)/markdown-browser-0.6.0-beta1/markdown.min.js
 
 
 define getSrc
-	curl -sL -o $(tmp_dir)/tmp.zip  $(1)
+	curl -fsSL -o $(tmp_dir)/tmp.zip  $(1)
 	unzip -q $(tmp_dir)/tmp.zip -d $(tmp_dir)
 	rm $(tmp_dir)/tmp.zip
 endef
 
-all: clean $(vendor_dir) $(tmp_dir) $(bulma) $(laydate) $(axios) $(axios_map) $(fontawesome) $(md5) $(vue)
+all: clean $(vendor_dir) $(tmp_dir) $(bulma) $(laydate) $(axios) $(axios_map) $(fontawesome) $(md5) $(vue) $(md2html)
 	-mkdir bin
 	go build -o bin/gomeeting -ldflags "-w" main.go
 pack: all
@@ -43,7 +45,8 @@ clean_all: clean
 		$(axios_map) \
 		$(fontawesome) \
 		$(md5) \
-		$(vue)
+		$(vue) \
+		$(md2html)
 
 $(vendor_dir):
 	glide install
@@ -83,3 +86,10 @@ $(vue): $(vue_src)
 	@cp -av $< $@
 $(vue_src):
 	$(call getSrc,"https://github.com/vuejs/vue/archive/v2.6.10.zip")
+
+$(md2html): $(md2html_src)
+	@cp -av $< $@
+$(md2html_src):
+	curl -fsSL -o $(tmp_dir)/tmp.tgz 'https://github.com/evilstreak/markdown-js/releases/download/v0.6.0-beta1/markdown-browser-0.6.0-beta1.tgz'
+	tar -xf $(tmp_dir)/tmp.tgz -C $(tmp_dir)
+	rm $(tmp_dir)/tmp.tgz

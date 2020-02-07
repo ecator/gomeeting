@@ -307,8 +307,8 @@ let app = new Vue({
                 return true
             }
         },
-        unescapeNotification() {
-            return this.notification.replace(/\n/g, "<br />")
+        parseNotification() {
+            return markdown.toHTML(this.notification)
         },
         canAddNotification() {
             return this.notificationInput.text ? true : false
