@@ -28,6 +28,10 @@ html{
     overflow-y: auto;
 }
 
+.notification{
+    overflow-wrap: break-word;
+}
+
 /*
 // special theme
 .icon{

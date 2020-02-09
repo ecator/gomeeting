@@ -203,7 +203,7 @@ let app = new Vue({
         roomID: -1,
         sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }],
         notification: "",
-        notificationInput: { rows: 1, text: "" },
+        notificationInput: ""
     },
     methods: {
         deleteMeeting(m) {
@@ -263,11 +263,12 @@ let app = new Vue({
             if (confirm("Delete this notification?")) {
                 axios.delete("/api/notification")
                     .then(() => getNotification())
+                    .then(setTimeout(()=>this.notificationRowAdjust(),500))
             }
         },
         // add notification
         addNotification() {
-            axios.post("/api/notification", { message: this.notificationInput.text })
+            axios.post("/api/notification", { message: this.notificationInput })
                 .then(function (response) {
                     if (response.data.hasOwnProperty("status")) {
                         if (response.data.status != 0) {
@@ -281,12 +282,18 @@ let app = new Vue({
                 })
         },
         // start input notification
-        notificationMousemove() {
-            this.notificationInput.rows = 5
-        },
-        // notification mouseout
-        notificationMouseout() {
-            this.notificationInput.rows = 1
+        notificationRowAdjust() {
+            let textArea = document.getElementById("notificationInput")
+            let mt = textArea.value.match(/\n/g)
+            if (mt) {
+                textArea.rows = mt.length
+            }else{
+                textArea.rows = 1
+            }
+            // hide scroll
+            while (textArea.scrollHeight > textArea.clientHeight ) {
+                textArea.rows++
+            }
         }
     },
     watch: {
@@ -294,9 +301,12 @@ let app = new Vue({
             getMeetings()
         },
         notification(v) {
-            if (v!="") {
-                this.notificationInput.text = v
+            if (v != "") {
+                this.notificationInput = v
             }
+        },
+        notificationInput(v){
+            this.notificationRowAdjust()
         }
     },
     computed: {
@@ -311,7 +321,7 @@ let app = new Vue({
             return markdown.toHTML(this.notification)
         },
         canAddNotification() {
-            return this.notificationInput.text ? true : false
+            return this.notificationInput ? true : false
         }
     }
 })
