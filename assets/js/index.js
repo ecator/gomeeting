@@ -252,7 +252,16 @@ let app = new Vue({
         ,
         // check if can delete one meeting
         canDel(m) {
-            if (this.profile.id == 0 || this.profile.id == m.maker.id || parseInt(this.profile.level) < parseInt(m.maker.level)) {
+            if (this.profile.id == 0) {
+                return true
+            } else if (this.profile.id == m.maker.id || parseInt(this.profile.level) < parseInt(m.maker.level)) {
+                let makeDay = m.make_date
+                let today = getToDayAsInt()
+                if (makeDay < today) {
+                    return false
+                } else if (makeDay == today && getNowAsMins() - 5 > m.start_time) {
+                    return false
+                }
                 return true
             } else {
                 return false
@@ -263,7 +272,7 @@ let app = new Vue({
             if (confirm("Delete this notification?")) {
                 axios.delete("/api/notification")
                     .then(() => getNotification())
-                    .then(setTimeout(()=>this.notificationRowAdjust(),500))
+                    .then(setTimeout(() => this.notificationRowAdjust(), 500))
             }
         },
         // add notification
@@ -287,11 +296,11 @@ let app = new Vue({
             let mt = textArea.value.match(/\n/g)
             if (mt) {
                 textArea.rows = mt.length
-            }else{
+            } else {
                 textArea.rows = 1
             }
             // hide scroll
-            while (textArea.scrollHeight > textArea.clientHeight ) {
+            while (textArea.scrollHeight > textArea.clientHeight) {
                 textArea.rows++
             }
         }
@@ -305,7 +314,7 @@ let app = new Vue({
                 this.notificationInput = v
             }
         },
-        notificationInput(v){
+        notificationInput(v) {
             this.notificationRowAdjust()
         }
     },
