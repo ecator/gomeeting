@@ -4,7 +4,7 @@ db:
   user: "user"
   password: "password"
 ldap:
-  enable: true
+  enable: false
   addr: "127.0.0.1:389"
   baseDN: "cn=users,dc=test,dc=local"
   level: 10
