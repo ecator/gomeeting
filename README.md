@@ -28,28 +28,51 @@ Now the `bin/gomeeting` is generated and you can run it.
 If you are firstly running gomeeting you must install MySQL and create a database named `gomeeting`.
 
 Creating the databse and tables are very simple, you just run this.
-```
+```shell
 mysql -u user -p password < script/create.sql
 ```
 The `user` and `password` is used to login to your local mysql service. It's recommended the database can be only accessed locally. And the tables `user` `org` `room` `meeting` will be also created.
 
 To run it must have a configuration file named `config.yml`.There is a template and you can use it.
-```
+```shell
 mv config.yml.sample config.yml
 ```
-The file is also very simple because it's only related to the database now.
+The file is also very simple because it's only related to the database and ldap.
 
 Like this !
 
-```
+```yaml
 db:
   host: "localhost"
   port: 3306
   user: "user"
   password: "password"
+ldap:
+  enable: false
+  addr: "127.0.0.1:389"
+  baseDN: "cn=users,dc=test,dc=local"
+  level: 10
+  orgID: 100
+  attrMapKey:
+    name: "displayName"
+    email: "mail"
 ```
 
 It will use that to connect to mysql so be careful.
+
+If you want to use ldap, set the `ldap.enable` to `true`. It can't support TLS now.
+
+The `ldap.orgID` will insert into `user`table as `org_id`field to mark as a ldap user. So you should add a ldap org like this.
+
+```sql
+INSERT INTO org(id, name) VALUES (100,"ldap")
+```
+
+The `ldap.attrMapKey` can use below to decide which attribute mapping `name` and `email` of `user`table.
+
+```shell
+ldapsearch -x -b "cn=username,cn=users,dc=test,dc=local" -h 127.0.0.1 -p 389 -D "cn=username,cn=users,dc=test,dc=local" -w "password"
+```
 
 Now you can run `bin/gomeeting -a 0.0.0.0` to start the server.The `-a 0.0.0.0` option makes sure you can access this service from remote,otherwise it only listens on local.You can run `bin/gomeeting -h` for more details.
 
@@ -128,6 +151,7 @@ After you add same `user` `org` `room`, open `http://server_ip:7728`  and have f
 - [Go MySQL Driver](https://github.com/go-sql-driver/mysql)
 - [layDate](https://www.layui.com/laydate/)
 - [YAML for Go](https://github.com/go-yaml/yaml)
+- [go-ldap](https://github.com/go-ldap/ldap)
 - [axios](https://github.com/axios/axios)
 - [js-md5](https://github.com/emn178/js-md5)
 - [Vue](https://github.com/vuejs/vue)
