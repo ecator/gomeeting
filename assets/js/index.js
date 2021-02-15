@@ -351,6 +351,7 @@ axios.get("/api/user/my")
                 app.profile.org = response.data.results.org.name
                 app.profile.name = response.data.results.name
                 app.profile.email = response.data.results.email
+                app.profile.ldap = response.data.results.ldap
             }
         } else {
             alert("unknown error")

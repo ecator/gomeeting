@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/ecator/gomeeting/config"
@@ -9,9 +8,9 @@ import (
 
 func TestConfig(t *testing.T) {
 	if c, e := config.ParseConfig("../config.yml"); e == nil {
-		fmt.Println(c)
+		t.Log(c)
 	} else {
-		fmt.Println(e)
+		t.Error(e)
 	}
 
 }

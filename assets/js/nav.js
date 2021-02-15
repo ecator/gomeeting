@@ -1,5 +1,5 @@
 Vue.component("my-nav", {
-    props: ["isAdmin"],
+    props: ["isAdmin","isLdap"],
     template: `
     <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
@@ -13,7 +13,7 @@ Vue.component("my-nav", {
                     <a class="navbar-item" href="/user">
                         Profile
                     </a>
-                    <a class="navbar-item" href="/password">
+                    <a v-if="!isLdap" class="navbar-item" href="/password">
                         Password
                     </a>
                     <a v-if="isAdmin" class="navbar-item" href="/admin">
@@ -43,7 +43,8 @@ axios.get("/api/user/my")
                 new Vue({
                     el: "#nav",
                     data: {
-                        isAdmin: response.data.results.id == 0 ? true : false
+                        isAdmin: response.data.results.id == 0 ? true : false,
+                        isLdap: response.data.results.ldap
                     }
                 })
             }

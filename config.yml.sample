@@ -3,3 +3,12 @@ db:
   port: 3306
   user: "user"
   password: "password"
+ldap:
+  enable: true
+  addr: "127.0.0.1:389"
+  baseDN: "cn=users,dc=test,dc=local"
+  level: 10
+  orgID: 100
+  attrMapKey:
+    name: "displayName"
+    email: "mail"

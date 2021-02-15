@@ -4,3 +4,7 @@ import:
   version: ~2.2.2
 - package: github.com/go-sql-driver/mysql
   version: ~1.4.1
+- package: github.com/go-ldap/ldap
+  version: ^3.2.4
+  subpackages:
+  - v3

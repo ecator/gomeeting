@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ecator/gomeeting/fun"
+	"github.com/ecator/gomeeting/ldap"
 	"github.com/ecator/gomeeting/msg"
 	"github.com/julienschmidt/httprouter"
 )
@@ -64,11 +65,14 @@ func handleLogout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 func handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var (
-		resp   jsonResp
-		status int
-		u      *user
-		u1     *user
-		err    error
+		resp           jsonResp
+		status         int
+		u              *user
+		u1             *user
+		ldapAtrrMapKey map[string]string
+		ldapUserInfo   map[string]string
+		err            error
+		loginSuccess   bool
 	)
 	switch r.Method {
 	case "GET":
@@ -84,30 +88,68 @@ func handleLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			resp = jsonResp{status, msg.GetMsg(status, "login parameter")}
 		} else {
 			//logger.Info("get user(" + u.Username + "," + u.Pw + ")")
+			ldapAtrrMapKey = map[string]string{
+				"name":  conf.LDAP.AttrMapKey.Name,
+				"email": conf.LDAP.AttrMapKey.Email,
+			}
 			u1 = new(user)
 			u1.Username = u.Username
 			if err = selectObjByUsername(u1); err == nil {
-				if u1.Pw == u.Pw {
-					//login ok
-					token := fun.GetMd5Str(time.Now().String() + u1.Username)
-					addOnlineUser(token, u1.ID, time.Now().Add(sessionExpires))
-					// add cookie
-					cookie := new(http.Cookie)
-					cookie.Name = "auth"
-					cookie.Value = token
-					cookie.Expires = time.Now().Add(sessionExpires)
-					http.SetCookie(w, cookie)
-					status = 0
-					resp = jsonResp{status, msg.GetMsg(1000, "login")}
+				// to support ldap, password changes to plain text
+				if u1.Pw == fun.GetMd5Str(u.Pw) {
+					// local login ok
+					loginSuccess = true
 				} else {
-					// password wrong
-					status = 9002
-					resp = jsonResp{status, msg.GetMsg(status, "password")}
+					// local login ng, try to ldap auth
+					if conf.LDAP.Enable {
+						_, err = ldap.Login(conf.LDAP.Addr, conf.LDAP.BaseDN, u1.Username, u.Pw, ldapAtrrMapKey)
+					}
+					if conf.LDAP.Enable && err == nil {
+						loginSuccess = true
+					} else {
+						// password wrong or ldap auth fail
+						status = 9002
+						resp = jsonResp{status, msg.GetMsg(status, "password")}
+					}
 				}
 			} else {
-				// user not found
-				status = 9003
-				resp = jsonResp{status, msg.GetMsg(status, "user")}
+				// user not found, try to ldap auth
+				if conf.LDAP.Enable {
+					ldapUserInfo, err = ldap.Login(conf.LDAP.Addr, conf.LDAP.BaseDN, u1.Username, u.Pw, ldapAtrrMapKey)
+				}
+				if conf.LDAP.Enable && err == nil {
+					// ldap auth ok, add an new user to local
+					u1.ID = getNewObjID(u1)
+					u1.Username = ldapUserInfo["username"]
+					u1.Pw = fun.GetMd5Str(u1.Username + time.Now().String())
+					u1.Level = conf.LDAP.Level
+					u1.OrgID = conf.LDAP.OrgID
+					u1.Name = ldapUserInfo["name"]
+					u1.Email = ldapUserInfo["email"]
+					err = insertObj(u1)
+					if err == nil {
+						loginSuccess = true
+					} else {
+						status = 9004
+						resp = jsonResp{status, msg.GetMsg(status, "add new user")}
+					}
+				} else {
+					// user not found or ldap auth fail
+					status = 9003
+					resp = jsonResp{status, msg.GetMsg(status, "user")}
+				}
+			}
+			if loginSuccess {
+				token := fun.GetMd5Str(time.Now().String() + u1.Username)
+				addOnlineUser(token, u1.ID, time.Now().Add(sessionExpires))
+				// add cookie
+				cookie := new(http.Cookie)
+				cookie.Name = "auth"
+				cookie.Value = token
+				cookie.Expires = time.Now().Add(sessionExpires)
+				http.SetCookie(w, cookie)
+				status = 0
+				resp = jsonResp{status, msg.GetMsg(1000, "login")}
 			}
 		}
 		// response

@@ -9,7 +9,7 @@ let app = new Vue({
             //console.log(this.username,this.password,md5(this.password))
             axios.post("/login", {
                 username: this.username,
-                password: md5(this.password)
+                password: this.password  // to support ldap password changes to plain text
             })
                 .then(function (response) {
                     //console.log(response.data)

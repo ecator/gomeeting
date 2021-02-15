@@ -14,6 +14,17 @@ type Config struct {
 		User     string
 		Password string
 	}
+	LDAP struct {
+		Enable     bool
+		Addr       string
+		BaseDN     string `yaml:"baseDN"`
+		Level      uint32
+		OrgID      uint32 `yaml:"orgID"`
+		AttrMapKey struct {
+			Name  string
+			Email string
+		} `yaml:"attrMapKey"`
+	}
 }
 
 // ParseConfig parses a file to config

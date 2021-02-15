@@ -464,6 +464,11 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 						} else {
 							logger.Warn(err.Error())
 						}
+						if conf.LDAP.Enable && respUser.Org.ID == conf.LDAP.OrgID {
+							respUser.Ldap = true
+						} else {
+							respUser.Ldap = false
+						}
 						status = 0
 						resp = jsonResp{status, respUser}
 					}

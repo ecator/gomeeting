@@ -312,6 +312,11 @@ func makeJSONrespUsers() []jsonRespUser {
 			r.Username = ret[i]["username"]
 			r.Org.ID = fun.Str2Uint32(ret[i]["org_id"])
 			r.Org.Name = ret[i]["org_name"]
+			if conf.LDAP.Enable && r.Org.ID == conf.LDAP.OrgID {
+				r.Ldap = true
+			} else {
+				r.Ldap = false
+			}
 			rs = append(rs, r)
 		}
 	}

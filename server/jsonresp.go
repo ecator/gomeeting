@@ -21,6 +21,7 @@ type jsonRespUser struct {
 	Org      jsonRespOrg `json:"org"`
 	Name     string      `json:"name"`
 	Email    string      `json:"email"`
+	Ldap     bool        `json:"ldap"`
 }
 
 type jsonRespMeeting struct {
