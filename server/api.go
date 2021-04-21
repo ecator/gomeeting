@@ -1,7 +1,9 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ecator/gomeeting/fun"
 
@@ -63,7 +65,12 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		if status == 0 {
 			// insert to db
 			if status == 0 {
-				fun.SetUint32ByName(o, "ID", getNewObjID(o))
+				if target == "meeting" {
+					// MeetingID is a hash of below
+					fun.SetStrByName(o, "MeetingID", fun.GetMd5Str(fmt.Sprintf("%d%d%d%d%d%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "Maker"), fun.GetUint32ByName(o, "CreateTime"), time.Now().Unix())))
+				} else {
+					fun.SetUint32ByName(o, "ID", getNewObjID(o))
+				}
 				if err := insertObj(o); err == nil {
 					// success
 					status = 0
@@ -89,11 +96,12 @@ func apiPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 						resp = jsonResp{status, respUser}
 					case "meeting":
 						respMeeting = jsonRespMeeting{}
+						respMeeting.ID = fun.GetStrByName(o, "MeetingID")
 						respMeeting.Room.ID = fun.GetUint32ByName(o, "RoomID")
 						respMeeting.StartTime = fun.GetUint32ByName(o, "StartTime")
 						respMeeting.EndTime = fun.GetUint32ByName(o, "EndTime")
 						respMeeting.Maker.ID = fun.GetUint32ByName(o, "Maker")
-						respMeeting.MakeDate = fun.GetUint32ByName(o, "MakeDate")
+						respMeeting.CreateTime = fun.GetUint32ByName(o, "CreateTime")
 						respMeeting.Memo = fun.GetStrByName(o, "Memo")
 						// search room_name
 						objRoom = new(room)
@@ -419,7 +427,7 @@ func apiGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			switch target {
 			case "meeting":
 				status = 0
-				resp = jsonResp{status, makeJSONrespMeetings(fun.GetUint32ByName(o, "MakeDate"))}
+				resp = jsonResp{status, makeJSONrespMeetings(fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"))}
 			case "rooms":
 				status = 0
 				resp = jsonResp{status, makeJSONrespRooms()}

@@ -50,16 +50,16 @@ func insertObj(o interface{}) error {
 			err = errors.New(msg.GetMsg(9010, "maker"))
 		} else if fun.GetStrByName(o, "Memo") == "" {
 			err = errors.New(msg.GetMsg(9007, "memo"))
-		} else if fun.GetUint32ByName(o, "MakeDate") < 19000101 || fun.GetUint32ByName(o, "MakeDate") > 99991231 {
-			err = errors.New(msg.GetMsg(9012, "make_date", "19000101", "99991231"))
-		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <%[2]d and end_time>=%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
+		} else if fun.GetUint32ByName(o, "CreateTime") == 0 {
+			err = errors.New(msg.GetMsg(9010, "create_time"))
+		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <%[2]d and end_time>=%[2]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "EndTime"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "end_time"))
-		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <=%[2]d and end_time>%[2]d and make_date=%[3]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
+		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%[1]d and  start_time <=%[2]d and end_time>%[2]d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "start_time"))
-		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%d and  start_time >%d and end_time<%d and make_date=%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))); err == nil {
+		} else if _, err = selectMeetings(fmt.Sprintf("select * from meeting where room_id=%d and  start_time >%d and end_time<%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"))); err == nil {
 			err = errors.New(msg.GetMsg(9009, "start_time - end_time"))
 		} else {
-			sql = fmt.Sprintf("insert into meeting values (%d,%d,%d,%d,'%s',%d)", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "Maker"), fun.GetStrByName(o, "Memo"), fun.GetUint32ByName(o, "MakeDate"))
+			sql = fmt.Sprintf("insert into meeting values ('%s',%d,%d,%d,%d,'%s',%d)", fun.GetStrByName(o, "MeetingID"), fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "Maker"), fun.GetStrByName(o, "Memo"), fun.GetUint32ByName(o, "CreateTime"))
 		}
 	default:
 		err = errors.New(msg.GetMsg(9004, "type"))
@@ -86,7 +86,7 @@ func deleteObj(o interface{}) error {
 	case *notification:
 		sql = fmt.Sprintf("truncate notification")
 	case *meeting:
-		sql = fmt.Sprintf("delete from meeting where room_id=%d and start_time=%d and end_time=%d and make_date=%d", fun.GetUint32ByName(o, "RoomID"), fun.GetUint32ByName(o, "StartTime"), fun.GetUint32ByName(o, "EndTime"), fun.GetUint32ByName(o, "MakeDate"))
+		sql = fmt.Sprintf("delete from meeting where id='%s'", fun.GetStrByName(o, "MeetingID"))
 	default:
 		err = errors.New(msg.GetMsg(9004, "type"))
 	}
@@ -195,7 +195,7 @@ func getNewObjID(o interface{}) uint32 {
 	return 1000
 }
 
-func makeJSONrespMeetings(makeDate uint32) []jsonRespMeeting {
+func makeJSONrespMeetings(startTime uint32, endTime uint32) []jsonRespMeeting {
 	var (
 		ms  []jsonRespMeeting
 		m   jsonRespMeeting
@@ -205,9 +205,10 @@ func makeJSONrespMeetings(makeDate uint32) []jsonRespMeeting {
 	SELECT 
 		 meeting.room_id as room_id
 		,room.name as room_name
+		,meeting.id as id
 		,meeting.start_time as start_time
 		,meeting.end_time as end_time
-		,meeting.make_date as make_date
+		,meeting.create_time as create_time
 		,meeting.maker as maker
 		,meeting.memo as memo
 		,user.username as user_username
@@ -218,20 +219,21 @@ func makeJSONrespMeetings(makeDate uint32) []jsonRespMeeting {
 		,org.name as org_name
 		FROM meeting
 			inner join user on meeting.maker = user.id
-			inner join room on meeting.room_id=room.id
-			inner join org on user.org_id=org.id
-		where meeting.make_date=%d
+			inner join room on meeting.room_id = room.id
+			inner join org on user.org_id = org.id
+		where meeting.start_time>=%d and meeting.start_time<=%d
 	`
-	sql = fmt.Sprintf(sql, makeDate)
+	sql = fmt.Sprintf(sql, startTime, endTime)
 	ms = []jsonRespMeeting{}
 	m = jsonRespMeeting{}
 	if r, err := dbConn.Query(sql); err == nil {
 		for i := 0; i < len(r); i++ {
+			m.ID = r[i]["id"]
 			m.Room.ID = fun.Str2Uint32(r[i]["room_id"])
 			m.Room.Name = r[i]["room_name"]
 			m.StartTime = fun.Str2Uint32(r[i]["start_time"])
 			m.EndTime = fun.Str2Uint32(r[i]["end_time"])
-			m.MakeDate = fun.Str2Uint32(r[i]["make_date"])
+			m.CreateTime = fun.Str2Uint32(r[i]["create_time"])
 			m.Maker.ID = fun.Str2Uint32(r[i]["maker"])
 			m.Maker.Username = r[i]["user_username"]
 			m.Maker.Name = r[i]["user_name"]

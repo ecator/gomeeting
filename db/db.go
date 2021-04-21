@@ -21,7 +21,7 @@ type DB struct {
 // Now it's only suport mysql
 func (db *DB) Open() error {
 	var err error
-	db.db, err = sql.Open("mysql", db.username+":"+db.password+"@tcp("+db.host+":"+strconv.Itoa(int(db.port))+")/"+db.dbname+"?charset=utf8")
+	db.db, err = sql.Open("mysql", db.username+":"+db.password+"@tcp("+db.host+":"+strconv.Itoa(int(db.port))+")/"+db.dbname+"?charset=utf8mb4")
 	err = db.db.Ping()
 	return err
 }

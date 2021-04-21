@@ -1,30 +1,64 @@
 
-// return yyyymmdd
-function getToDayAsInt() {
-    let n = new Date
-    let s = n.getFullYear().toString() + ("0" + (n.getMonth() + 1)).substr(-2) + ("0" + n.getDate()).substr(-2)
-    return parseInt(s)
+/**
+ * return timestamp of today
+ * @returns {Number} timestamp 
+ */
+function getTodayAsTimestamp() {
+    let n = new Date()
+    n = new Date(n.getFullYear(), n.getMonth(), n.getDate())
+    let s = parseInt(n.getTime() / 1000)
+    return s
 }
 
-// return yyyy-mm-dd
-function getToDayAsStr() {
-    let n = new Date
+/**
+ * return date from second timestamp
+ * @param {Number} t timestamp
+ * @returns {Date} date 
+ */
+function timestamp2date(t) {
+    return new Date(t * 1000)
+}
+
+/**
+ * return second timestamp from date
+ * @param {Date} d the date object
+ * @returns {Number} timestamp
+ */
+function date2timestamp(d) {
+    return parseInt(d.getTime() / 1000)
+}
+
+/**
+ * get formatted string of today
+ * @returns {String} yyyy-mm-dd
+ */
+function getTodayAsStr() {
+    let n = new Date()
     let s = n.getFullYear().toString() + "-" + ("0" + (n.getMonth() + 1)).substr(-2) + "-" + ("0" + n.getDate()).substr(-2)
     return s
 }
 
-// return hours*60 + mins
-function getNowAsMins() {
+/**
+ * return timestamp of minutes
+ * @returns {Number} timestamp 
+ */
+function getNowAsTimestampOfMins() {
     let n = new Date()
-    let s = n.getHours() * 60 + n.getMinutes()
+    n = new Date(n.getFullYear(), n.getMonth(), n.getDate(), n.getHours(), n.getMinutes())
+    let s = date2timestamp(n)
     return s
 }
 
-// get meetings
+
+/**
+ * get meetings
+ *
+ */
 function getMeetings() {
     axios.get("/api/meeting", {
         params: {
-            make_date: app.makeDay ? app.makeDay.replace(/-/g, "") : app.makeDayDef.replace(/-/g, "")
+            start_time: app.makeDay,
+            end_time: app.makeDay + 24 * 3600 - 60
         }
     })
         .then(function (response) {
@@ -45,10 +79,13 @@ function getMeetings() {
 
 }
 
-// add meeting
+/**
+ * add meetings
+ *
+ */
 function addMeeting() {
     axios.post("/api/meeting", {
-        make_date: parseInt(app.makeDay ? app.makeDay.replace(/-/g, "") : app.makeDayDef.replace(/-/g, "")),
+        create_time: date2timestamp(new Date()),
         start_time: app.startTime,
         end_time: app.endTime,
         room_id: app.roomID,
@@ -69,7 +106,10 @@ function addMeeting() {
 
 }
 
-// get rooms
+/**
+ * get rooms
+ *
+ */
 function getRooms() {
     axios.get("/api/rooms")
         .then(function (response) {
@@ -92,7 +132,10 @@ function getRooms() {
 
 }
 
-// get notification
+/**
+ * get notification
+ * 
+ */
 function getNotification() {
     axios.get("/api/notification")
         .then(function (response) {
@@ -111,15 +154,17 @@ function getNotification() {
         })
 
 }
-// delete meeting and refresh
+
+/**
+ * delete meeting and refresh
+ *
+ * @param {Object} m the meeting object
+ */
 function delMeeting(m) {
     axios.delete("/api/meeting", {
         params: {
-            make_date: m.make_date,
-            room_id: m.room.id,
-            start_time: m.start_time,
-            end_time: m.end_time,
-            maker: app.profile.id
+            meeting_id: m.id,
+            maker: m.maker.id
         }
     })
         .then(function (response) {
@@ -136,7 +181,11 @@ function delMeeting(m) {
 
 }
 
-// change sort flg and run sort meetings
+/**
+ * change sort flg and run sort meetings
+ * @param {Element} sortEl - sort icon element
+ * @param {string} m - sort icon name
+ */
 function sortMeetings(sortEl, m) {
     // find flg and shift position
     let flg = ""
@@ -158,7 +207,11 @@ function sortMeetings(sortEl, m) {
     sortEl.setAttribute("class", "fas fa-caret-" + flg)
     runSortMeetings()
 }
-// run sort meetings
+
+/**
+ * run sort meetings
+ *
+ */
 function runSortMeetings() {
     for (let i of app.sortFlgs) {
         //console.log("sort",i.id,i.flg)
@@ -193,12 +246,12 @@ let app = new Vue({
     el: "#app",
     data: {
         meetings: [],
-        makeDay: getToDayAsStr(),
-        makeDayDef: getToDayAsStr(),
+        makeDay: getTodayAsTimestamp(),
+        makeDayStr: getTodayAsStr(),
         profile: {},
         memo: "",
-        startTime: getNowAsMins(),
-        endTime: getNowAsMins() >= 23 * 60 ? getNowAsMins() : getNowAsMins() + 60,
+        startTime: getNowAsTimestampOfMins(),
+        endTime: getNowAsTimestampOfMins() + 3600 >= getTodayAsTimestamp() + 24 * 3600 ? getNowAsTimestampOfMins() : getNowAsTimestampOfMins() + 3600,
         rooms: [],
         roomID: -1,
         sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }],
@@ -213,53 +266,73 @@ let app = new Vue({
         },
         extendMeeting(m) {
             this.roomID = m.room.id
-            this.memo = `forked from ${m.room.name}(${this.mins2hm(m.start_time)} - ${this.mins2hm(m.end_time)})`
-            let start_time = m.end_time
-            let end_time = start_time + 30
+            this.memo = `forked from ${m.room.name}(${this.timestamp2hm(m.start_time)} - ${this.timestamp2hm(m.end_time)})`
+            let startTime = timestamp2date(m.end_time)
+            let endTime = timestamp2date(m.end_time)
             let ctl_time = document.getElementById("timeRange")
             let ctl_memo = document.getElementById("memo")
             let ms = this.meetings.filter((i) => i.room.id == m.room.id && i.start_time >= m.start_time)
             ms.sort((a, b) => a['start_time'] - b['start_time'])
             let msg = ""
-            if (ms.length == 1 || ms[1].start_time - ms[0].end_time >= 30) {
-                start_time = ms[0].end_time
-                end_time = start_time + 30
+            if (ms.length == 1) {
+                startTime = timestamp2date(ms[0].end_time)
+                let diffsec = this.makeDay + 24 * 3600 - 60 - date2timestamp(startTime)
+                if (diffsec >= 30 * 60) {
+                    diffsec = 30 * 60
+                    msg = "You can extend this meeting by at least 30 minutes."
+                } else {
+                    msg = `You can extend this meeting by up to ${parseInt(diffsec / 60)} minutes.`
+                }
+                endTime = timestamp2date(date2timestamp(startTime) + diffsec)
+            } else if (ms[1].start_time - ms[0].end_time >= 30 * 60) {
+                startTime = timestamp2date(ms[0].end_time)
+                endTime = timestamp2date(date2timestamp(startTime) + 30 * 60)
                 msg = "You can extend this meeting by at least 30 minutes."
-            } else if (ms[1].start_time - ms[0].end_time >= 10) {
-                start_time = ms[0].end_time
-                end_time = ms[1].start_time
-                msg = `You can extend this meeting by up to ${end_time - start_time} minutes.`
+            } else if (ms[1].start_time - ms[0].end_time >= 10 * 60) {
+                startTime = timestamp2date(ms[0].end_time)
+                endTime = timestamp2date(ms[1].start_time)
+                msg = `You can extend this meeting by up to ${parseInt((date2timestamp(endTime) - date2timestamp(startTime)) / 60)} minutes.`
             } else {
                 msg = "Sorry,you can't extend this meeting because of another one coming up!\nYou may try to change a room."
             }
-            this.startTime = start_time
-            this.endTime = end_time
-            ctl_time.value = this.mins2hm(this.startTime) + " - " + this.mins2hm(this.endTime)
+            this.startTime = date2timestamp(startTime)
+            this.endTime = date2timestamp(endTime)
+            ctl_time.value = this.timestamp2hm(this.startTime) + " - " + this.timestamp2hm(this.endTime)
             ctl_memo.focus()
             setTimeout(() => ctl_memo.select(), 100)
             alert(msg)
         },
-        // convert mins to hh:mm
-        mins2hm(mins) {
-            return ("0" + parseInt(mins / 60)).substr(-2) + ":" + ("0" + (mins % 60)).substr(-2)
+        /**
+         * convert timestamp to hh:mm
+         *
+         * @param {Number} t timestamp
+         * @returns {string} formatted string of hh:mm 
+         */
+        timestamp2hm(t) {
+            let d = timestamp2date(t)
+            return `0${d.getHours()}`.substr(-2) + ":" + `0${d.getMinutes()}`.substr(-2)
         },
-        // add new meeting
+        /**
+         * add new meeting
+         *
+         */
         postMeeting() {
             if (confirm("Add a meeting?")) {
                 addMeeting()
             }
         }
         ,
-        // check if can delete one meeting
+        /**
+         * check if can delete one meeting
+         * @param {Object} m meeting object
+         * @returns {boolean} 
+         */
         canDel(m) {
             if (this.profile.id == 0) {
                 return true
             } else if (this.profile.id == m.maker.id || parseInt(this.profile.level) < parseInt(m.maker.level)) {
-                let makeDay = m.make_date
-                let today = getToDayAsInt()
-                if (makeDay < today) {
-                    return false
-                } else if (makeDay == today && getNowAsMins() - 5 > m.start_time) {
+                let startTime = m.start_time
+                if (date2timestamp(new Date()) - 5 * 60 > startTime) {
                     return false
                 }
                 return true
@@ -267,7 +340,16 @@ let app = new Vue({
                 return false
             }
         },
-        // delete notification
+        /**
+         * check if cross days with makeday
+         * @param {number} t
+         * @returns {boolean}
+         */
+        isCrossDay(t) {
+            let makeDay = timestamp2date(this.makeDay)
+            let target = timestamp2date(t)
+            return makeDay.getDate() != target.getDate()
+        },
         delNotification() {
             if (confirm("Delete this notification?")) {
                 axios.delete("/api/notification")
@@ -275,7 +357,6 @@ let app = new Vue({
                     .then(setTimeout(() => this.notificationRowAdjust(), 500))
             }
         },
-        // add notification
         addNotification() {
             axios.post("/api/notification", { message: this.notificationInput })
                 .then(function (response) {
@@ -290,7 +371,10 @@ let app = new Vue({
                     }
                 })
         },
-        // start input notification
+        /**
+         * start input notification
+         *
+         */
         notificationRowAdjust() {
             let textArea = document.getElementById("notificationInput")
             let mt = textArea.value.match(/\n/g)
@@ -308,6 +392,15 @@ let app = new Vue({
     watch: {
         makeDay(v) {
             getMeetings()
+            let startTime = timestamp2date(this.startTime)
+            let endTime = timestamp2date(this.endTime)
+            let makeDay = timestamp2date(this.makeDay)
+            makeDay.setHours(startTime.getHours())
+            makeDay.setMinutes(startTime.getMinutes())
+            app.startTime = date2timestamp(makeDay)
+            makeDay.setHours(endTime.getHours())
+            makeDay.setMinutes(endTime.getMinutes())
+            app.endTime = date2timestamp(makeDay)
         },
         notification(v) {
             if (v != "") {
@@ -364,12 +457,12 @@ axios.get("/api/user/my")
 laydate.render({
     elem: '#makeDay',
     lang: "en",
-    value: app.makeDayDef,
+    value: app.makeDayStr,
     showBottom: true,
     btns: ["now"],
     done: function (v, d, end) {
-        //console.log(v)
-        app.makeDay = v
+        //console.log(v,d)
+        app.makeDay = date2timestamp(new Date(d.year, d.month - 1, d.date))
     }
 })
 
@@ -379,7 +472,7 @@ laydate.render({
     range: true,
     format: "HH:mm",
     lang: "en",
-    value: `${app.mins2hm(app.startTime)} - ${app.mins2hm(app.endTime)}`,
+    value: `${app.timestamp2hm(app.startTime)} - ${app.timestamp2hm(app.endTime)}`,
     showBottom: true,
     btns: ["confirm"],
     ready: function (d) {
@@ -398,7 +491,12 @@ laydate.render({
         let s = v.split(" - ")
         let s1 = s[0].split(":")
         let s2 = s[1].split(":")
-        app.startTime = parseInt(s1[0]) * 60 + parseInt(s1[1])
-        app.endTime = parseInt(s2[0]) * 60 + parseInt(s2[1])
+        let makeDay = timestamp2date(app.makeDay)
+        makeDay.setHours(s1[0])
+        makeDay.setMinutes(s1[1])
+        app.startTime = date2timestamp(makeDay)
+        makeDay.setHours(s2[0])
+        makeDay.setMinutes(s2[1])
+        app.endTime = date2timestamp(makeDay)
     }
 })

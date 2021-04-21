@@ -25,12 +25,13 @@ type jsonRespUser struct {
 }
 
 type jsonRespMeeting struct {
-	Room      jsonRespRoom `json:"room"`
-	StartTime uint32       `json:"start_time"`
-	EndTime   uint32       `json:"end_time"`
-	Maker     jsonRespUser `json:"maker"`
-	Memo      string       `json:"memo"`
-	MakeDate  uint32       `json:"make_date"`
+	ID         string       `json:"id"`
+	Room       jsonRespRoom `json:"room"`
+	StartTime  uint32       `json:"start_time"`
+	EndTime    uint32       `json:"end_time"`
+	Maker      jsonRespUser `json:"maker"`
+	Memo       string       `json:"memo"`
+	CreateTime uint32       `json:"create_time"`
 }
 
 type jsonRespNotification struct {

@@ -76,12 +76,12 @@
                         <tbody>
                             <tr v-for="(meeting,i) in meetings">
                                 <td>{{meeting.room.name}}</td>
-                                <td>{{ mins2hm(meeting.start_time) }}</td>
-                                <td>{{ mins2hm(meeting.end_time) }}</td>
+                                <td>{{ timestamp2hm(meeting.start_time) }}</td>
+                                <td>{{ timestamp2hm(meeting.end_time) }}<span v-if="isCrossDay(meeting.end_time)" class="tag is-rounded is-warning is-light">+1</span></td>
                                 <td><abbr :title="meeting.maker.username">{{
                                         meeting.maker.name }}</abbr></td>
                                 <td>{{ meeting.memo }}</td>
-                                <td><a class="button is-small"
+                                <td><a v-if="!isCrossDay(meeting.end_time)" class="button is-small"
                                         v-on:click="extendMeeting(meeting)"><i
                                             class="fas fa-utensils"></i></a>
                                     <a class="button is-small is-danger

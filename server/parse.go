@@ -12,21 +12,22 @@ import (
 
 func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	var (
-		id        string
-		username  string
-		password  string
-		level     string
-		orgID     string
-		name      string
-		email     string
-		roomID    string
-		startTime string
-		endTime   string
-		maker     string
-		memo      string
-		makeDate  string
-		message   string
-		b         []byte
+		id         string
+		username   string
+		password   string
+		level      string
+		orgID      string
+		name       string
+		email      string
+		roomID     string
+		meetingID  string
+		startTime  string
+		endTime    string
+		maker      string
+		memo       string
+		createTime string
+		message    string
+		b          []byte
 	)
 
 	// get from params first
@@ -37,12 +38,13 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	orgID = ps.ByName("org_id")
 	name = ps.ByName("name")
 	email = ps.ByName("email")
+	meetingID = ps.ByName("meeting_id")
 	roomID = ps.ByName("room_id")
 	startTime = ps.ByName("start_time")
 	endTime = ps.ByName("end_time")
 	maker = ps.ByName("maker")
 	memo = ps.ByName("memo")
-	makeDate = ps.ByName("makeDate")
+	createTime = ps.ByName("create_time")
 	message = ps.ByName("message")
 
 	// check if not found then get from formvalue
@@ -67,6 +69,9 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	if email == "" {
 		email = r.FormValue("email")
 	}
+	if meetingID == "" {
+		meetingID = r.FormValue("meeting_id")
+	}
 	if roomID == "" {
 		roomID = r.FormValue("room_id")
 	}
@@ -82,8 +87,8 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	if memo == "" {
 		memo = r.FormValue("memo")
 	}
-	if makeDate == "" {
-		makeDate = r.FormValue("make_date")
+	if createTime == "" {
+		createTime = r.FormValue("create_time")
 	}
 	if message == "" {
 		message = r.FormValue("message")
@@ -112,6 +117,9 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 		fun.SetStrByName(o, "Email", email)
 	}
 
+	if meetingID != "" {
+		fun.SetStrByName(o, "MeetingID", meetingID)
+	}
 	if roomID != "" {
 		fun.SetUint32ByName(o, "RoomID", fun.Str2Uint32(roomID))
 	}
@@ -127,8 +135,8 @@ func parseReqToObj(r *http.Request, ps httprouter.Params, o interface{}) {
 	if memo != "" {
 		fun.SetStrByName(o, "Memo", memo)
 	}
-	if makeDate != "" {
-		fun.SetUint32ByName(o, "MakeDate", fun.Str2Uint32(makeDate))
+	if createTime != "" {
+		fun.SetUint32ByName(o, "CreateTime", fun.Str2Uint32(createTime))
 	}
 	if message != "" {
 		fun.SetStrByName(o, "Message", message)
