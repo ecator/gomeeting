@@ -1,11 +1,10 @@
 
-# GoMeeting [![Build Status](https://www.travis-ci.org/ecator/gomeeting.svg?branch=master)](https://www.travis-ci.org/ecator/gomeeting) ![GitHub last commit](https://img.shields.io/github/last-commit/ecator/gomeeting) ![GitHub language count](https://img.shields.io/github/languages/count/ecator/gomeeting) ![GitHub repo size](https://img.shields.io/github/repo-size/ecator/gomeeting) ![GitHub](https://img.shields.io/github/license/ecator/gomeeting) 
+# GoMeeting ![GitHub last commit](https://img.shields.io/github/last-commit/ecator/gomeeting) ![GitHub language count](https://img.shields.io/github/languages/count/ecator/gomeeting) ![GitHub repo size](https://img.shields.io/github/repo-size/ecator/gomeeting) ![GitHub](https://img.shields.io/github/license/ecator/gomeeting) 
 It's a very simple meeting room booking system written by go language for learning.
 
 ## Build
 ### Required
- - go >= 1.12 (must)
- - glide (must)
+ - go >= 1.13 (must)
  - curl (must)
  - unzip (must)
  - GNU Make (must)
