@@ -49,7 +49,7 @@ clean_all: clean
 		$(md2html)
 
 $(vendor_dir):
-	glide install
+	go mod vendor
 $(tmp_dir):
 	-mkdir -p $(tmp_dir)
 
