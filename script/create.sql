@@ -7,14 +7,14 @@ USE `gomeeting`;
 --
 
 CREATE TABLE IF NOT EXISTS `meeting` (
+  `id` varchar(32) NOT NULL,
   `room_id` int(10) unsigned NOT NULL,
   `start_time` int(10) unsigned NOT NULL,
   `end_time` int(10) unsigned NOT NULL,
   `maker` int(10) unsigned NOT NULL,
   `memo` varchar(100) NOT NULL,
-  `make_date` int(8) unsigned NOT NULL,
-  UNIQUE KEY `room_id` (`room_id`,`start_time`,`end_time`,`make_date`),
-  KEY `make_date` (`make_date`)
+  `create_time` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
