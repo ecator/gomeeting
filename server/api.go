@@ -183,7 +183,13 @@ func apiDel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		parseReqToObj(r, ps, o)
 		switch target {
 		case "meeting":
-			if id1 > 0 && fun.GetUint32ByName(o, "Maker") != id1 {
+			maker := new(user)
+			maker.ID = fun.GetUint32ByName(o, "Maker")
+			selectObjByID(maker)
+			thisUser := new(user)
+			thisUser.ID = id1
+			selectObjByID(thisUser)
+			if thisUser.ID > 0 && thisUser.ID != maker.ID && thisUser.Level >= maker.Level {
 				// no privilege
 				status = 9004
 				resp = jsonResp{status, msg.GetMsg(status, "privilege")}

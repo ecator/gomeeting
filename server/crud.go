@@ -84,7 +84,7 @@ func deleteObj(o interface{}) error {
 	case *room:
 		sql = fmt.Sprintf("delete from room where id=%d", fun.GetUint32ByName(o, "ID"))
 	case *notification:
-		sql = fmt.Sprintf("truncate notification")
+		sql = fmt.Sprintf("truncate %s", "notification")
 	case *meeting:
 		sql = fmt.Sprintf("delete from meeting where id='%s'", fun.GetStrByName(o, "MeetingID"))
 	default:

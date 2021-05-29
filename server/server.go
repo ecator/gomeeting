@@ -94,8 +94,8 @@ func StartServer(listenAddr string, listenPort uint, frontendPath string, config
 	errCh := make(chan error)
 	var wg sync.WaitGroup
 	listenAddr = listenAddr + ":" + strconv.Itoa(int(listenPort))
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		errCh <- http.ListenAndServe(listenAddr, router)
 		wg.Done()
 	}()
@@ -168,7 +168,7 @@ func redirectLocation(w http.ResponseWriter, urlstr string) {
 func getThisUserID(r *http.Request) (uint32, error) {
 	var status int
 	if c, err := r.Cookie("auth"); err == nil {
-		if user, has := onlineUsers[c.Value]; has == true {
+		if user, has := onlineUsers[c.Value]; has {
 			if user.expires.After(time.Now()) {
 				return user.id, nil
 			}
