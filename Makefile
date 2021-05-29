@@ -1,4 +1,3 @@
-pack_file = GoMeeting-$(shell git tag -l | tail -n 1)-$(shell uname -s)-$(shell uname -p).tar.xz
 css_dir = assets/css
 js_dir = assets/js
 tmp_dir = TEST/tmp
@@ -27,15 +26,27 @@ define getSrc
 	rm $(tmp_dir)/tmp.zip
 endef
 
+define makeTarget
+	GOOS=$(1) GOARCH=amd64 go build -o bin/gomeeting-$(1) -ldflags "-w" main.go
+endef
+
+define packFile
+	-@mv bin/gomeeting-$(1) bin/gomeeting
+	tar cJf dist/GoMeeting-$(shell git tag -l | tail -n 1)-$(1)-amd64.tar.xz assets bin/gomeeting script config.yml.sample
+endef
+
+
 all: clean $(vendor_dir) $(tmp_dir) $(bulma) $(laydate) $(axios) $(axios_map) $(fontawesome) $(md5) $(vue) $(md2html)
 	-mkdir bin
-	go build -o bin/gomeeting -ldflags "-w" main.go
+	$(call makeTarget,linux)
+	$(call makeTarget,darwin)
 pack: all
-	-mkdir TEST
-	-@rm TEST/$(pack_file)
-	tar cJf TEST/$(pack_file) assets bin script config.yml.sample
+	-mkdir dist
+	$(call packFile,linux)
+	$(call packFile,darwin)
 clean:
 	-rm -rf bin
+	-rm -rf dist
 clean_all: clean
 	-rm -rf $(tmp_dir) \
 		$(vendor_dir) \
