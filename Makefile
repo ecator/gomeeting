@@ -27,12 +27,17 @@ define getSrc
 endef
 
 define makeTarget
-	GOOS=$(1) GOARCH=amd64 go build -o bin/gomeeting-$(1) -ldflags "-w" main.go
+	[ $(1) = windows ] && GOOS=$(1) GOARCH=amd64 go build -o bin/gomeeting-$(1).exe -ldflags "-w" main.go || GOOS=$(1) GOARCH=amd64 go build -o bin/gomeeting-$(1) -ldflags "-w" main.go
 endef
 
 define packFile
-	-@mv bin/gomeeting-$(1) bin/gomeeting
-	tar cJf dist/GoMeeting-$(shell git tag -l | tail -n 1)-$(1)-amd64.tar.xz assets bin/gomeeting script config.yml.sample
+	if [ $(1) = windows ];then \
+		mv bin/gomeeting-$(1).exe bin/gomeeting.exe ;\
+		tar cJf dist/GoMeeting-$(shell git tag -l | tail -n 1)-$(1)-amd64.tar.xz assets bin/gomeeting.exe script config.yml.sample ;\
+	else \
+		mv bin/gomeeting-$(1) bin/gomeeting ;\
+		tar cJf dist/GoMeeting-$(shell git tag -l | tail -n 1)-$(1)-amd64.tar.xz assets bin/gomeeting script config.yml.sample ;\
+	fi
 endef
 
 
@@ -40,10 +45,12 @@ all: clean $(vendor_dir) $(tmp_dir) $(bulma) $(laydate) $(axios) $(axios_map) $(
 	-mkdir bin
 	$(call makeTarget,linux)
 	$(call makeTarget,darwin)
+	$(call makeTarget,windows)
 pack: all
 	-mkdir dist
 	$(call packFile,linux)
 	$(call packFile,darwin)
+	$(call packFile,windows)
 clean:
 	-rm -rf bin
 	-rm -rf dist
