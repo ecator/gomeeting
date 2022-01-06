@@ -3,7 +3,6 @@ package loggers
 import (
 	"log"
 	"os"
-	"syscall"
 )
 
 // Logger looger
@@ -48,7 +47,6 @@ func (l *Logger) Close() {
 
 // New returns a new logger
 func New(logFile string, prefix string) (*Logger, error) {
-	syscall.Umask(0)
 	logger := new(Logger)
 	var err error
 	logger.file, err = os.OpenFile(logFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600)
