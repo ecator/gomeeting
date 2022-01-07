@@ -32,6 +32,16 @@ html{
     overflow-wrap: break-word;
 }
 
+.icon-teams{
+    background: url('/img/teams.png') no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    border-radius: 50% !important;
+}
+.icon-teams svg{
+    visibility: hidden;
+}
+
 /*
 // special theme
 .icon{

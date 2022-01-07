@@ -49,6 +49,41 @@ function getNowAsTimestampOfMins() {
     return s
 }
 
+/**
+ * open teams scheduling dialog
+ * @see https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/deep-links#generate-a-deep-link-to-the-scheduling-dialog
+ * @param {String} subject 
+ * @param {String} content 
+ * @param {String[]} attendees 
+ * @param {Date} startTime 
+ * @param {Date} endTime 
+ */
+function openTeamsSchedule(subject, content, attendees, startTime, endTime) {
+    //console.log(`subject=${subject}, content=${content}, attendees=${attendees}, startTime=${startTime}, endTime=${endTime}`)
+    let hasParam = false;
+    let entrypoint = "https://teams.microsoft.com/l/meeting/new";
+    if (subject) {
+        entrypoint += `${hasParam ? '&' : '?'}subject=${encodeURIComponent(subject)}`;
+        hasParam = true;
+    }
+    if (content) {
+        entrypoint += `${hasParam ? '&' : '?'}content=${encodeURIComponent(content)}`;
+        hasParam = true;
+    }
+    if (attendees && Array.isArray(attendees) && attendees.length > 0) {
+        entrypoint += `${hasParam ? '&' : '?'}attendees=${encodeURIComponent(attendees.join(","))}`;
+        hasParam = true;
+    }
+    if (startTime && startTime instanceof Date) {
+        entrypoint += `${hasParam ? '&' : '?'}startTime=${encodeURIComponent(startTime.toISOString())}`;
+        hasParam = true;
+    }
+    if (endTime && endTime instanceof Date) {
+        entrypoint += `${hasParam ? '&' : '?'}endTime=${encodeURIComponent(endTime.toISOString())}`;
+        hasParam = true;
+    }
+    window.open(entrypoint);
+}
 
 /**
  * get meetings
@@ -259,6 +294,13 @@ let app = new Vue({
         notificationInput: ""
     },
     methods: {
+        openTeamsSch(m) {
+            let sub = m.memo
+            let content = `${m.room.name}\n${sub}`
+            let startTime = timestamp2date(m.start_time)
+            let endTime = timestamp2date(m.end_time)
+            openTeamsSchedule(sub, content, [], startTime, endTime)
+        },
         deleteMeeting(m) {
             if (confirm("Delete this meeting?")) {
                 delMeeting(m)
