@@ -5,7 +5,8 @@
 .DS_Store
 config.yml
 server.log
-/.vscode/
+/.vscode/*
+!/.vscode/launch.json
 *.code-workspace
 /vendor/
 /assets/css/bulma.min.css
