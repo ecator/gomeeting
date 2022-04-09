@@ -1,0 +1,16 @@
+FROM docker/dev-environments-default:stable-1
+
+ARG GODOWNLOADURL=https://go.dev/dl/go1.15.linux-amd64.tar.gz
+ARG GODOWNLOADTEMPFILE=/tmp/go.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+ENV LANG=C.UTF-8
+
+RUN apt update \ 
+    && apt install -y make default-mysql-client xz-utils \
+    && curl -L $GODOWNLOADURL  -o $GODOWNLOADTEMPFILE \
+    && rm -rf /usr/local/go && tar -C /usr/local -xzf $GODOWNLOADTEMPFILE \
+    && rm -rf $GODOWNLOADTEMPFILE \
+    && apt clean
+
+RUN echo "alias ll='ls -ahl --color'" >> /etc/bash.bashrc
+

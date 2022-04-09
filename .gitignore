@@ -1,3 +1,4 @@
+/.docker/devenvs-docker-compose.yaml
 /bin/
 /dist/
 /TEST/
