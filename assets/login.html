@@ -13,6 +13,7 @@
         <script src="/js/axios.min.js"></script>
         <script src="/js/md5.min.js"></script>
         <script src="/js/fontawesome.min.js"></script>
+        <script src="/js/meta.js"></script>
     </head>
     <body>
         <section class="hero is-primary">
@@ -35,7 +36,7 @@
                         <div class="field">
                             <p class="control has-icons-left has-icons-right">
                                 <input class="input is-large" type="text"
-                                    placeholder="username"
+                                    :placeholder="placeholder.username"
                                     v-model:value="username">
                                 <span class="icon is-small is-left">
                                     <i class="fas fa-user"></i>
@@ -45,7 +46,7 @@
                         <div class="field">
                             <p class="control has-icons-left">
                                 <input class="input is-large" type="password"
-                                    placeholder="password"
+                                    :placeholder="placeholder.password"
                                     v-model:value="password">
                                 <span class="icon is-small is-left">
                                     <i class="fas fa-lock"></i>

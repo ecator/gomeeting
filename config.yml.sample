@@ -1,10 +1,13 @@
 db:
   host: "localhost"
   port: 3306
-  user: "user"
+  user: "username"
   password: "password"
 ldap:
   enable: false
+  placeholder:
+    username: "AD account"
+    password: "AD password"
   addr: "127.0.0.1:389"
   baseDN: "cn=users,dc=test,dc=local"
   level: 10
@@ -12,3 +15,6 @@ ldap:
   attrMapKey:
     name: "displayName"
     email: "mail"
+teams:
+  enable: false
+  entrypoint: "https://teams.microsoft.com/l/meeting/new"

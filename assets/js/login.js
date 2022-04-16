@@ -2,7 +2,8 @@ let app = new Vue({
     el: "#login",
     data: {
         username: "",
-        password: ""
+        password: "",
+        placeholder: { username: "username", password: "password" }
     },
     methods: {
         login: function () {
@@ -31,8 +32,8 @@ let app = new Vue({
                 })
 
         },
-        keypress: function(e){
-            if (e.keyCode==13 && this.canLogin){
+        keypress: function (e) {
+            if (e.keyCode == 13 && this.canLogin) {
                 this.login()
             }
         }
@@ -46,4 +47,13 @@ let app = new Vue({
             }
         }
     }
+})
+
+pullMetadata().then(meta => {
+    if (meta.ldap.enable) {
+        app.placeholder.username = meta.ldap.placeholder.username
+        app.placeholder.password = meta.ldap.placeholder.password
+    }
+}, err => {
+    console.log("pullMetadata error: " + err)
 })

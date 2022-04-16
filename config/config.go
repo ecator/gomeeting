@@ -15,7 +15,11 @@ type Config struct {
 		Password string
 	}
 	LDAP struct {
-		Enable     bool
+		Enable      bool
+		Placeholder struct {
+			Username string
+			Password string
+		}
 		Addr       string
 		BaseDN     string `yaml:"baseDN"`
 		Level      uint32
@@ -24,6 +28,10 @@ type Config struct {
 			Name  string
 			Email string
 		} `yaml:"attrMapKey"`
+	}
+	Teams struct {
+		Enable     bool
+		Entrypoint string
 	}
 }
 

@@ -61,7 +61,7 @@ function getNowAsTimestampOfMins() {
 function openTeamsSchedule(subject, content, attendees, startTime, endTime) {
     //console.log(`subject=${subject}, content=${content}, attendees=${attendees}, startTime=${startTime}, endTime=${endTime}`)
     let hasParam = false;
-    let entrypoint = "https://teams.microsoft.com/l/meeting/new";
+    let entrypoint = app.teams.entrypoint;
     if (subject) {
         entrypoint += `${hasParam ? '&' : '?'}subject=${encodeURIComponent(subject)}`;
         hasParam = true;
@@ -291,7 +291,8 @@ let app = new Vue({
         roomID: -1,
         sortFlgs: [{ id: "maker", flg: "down" }, { id: "end_time", flg: "down" }, { id: "start_time", flg: "down" }, { id: "room", flg: "down" }],
         notification: "",
-        notificationInput: ""
+        notificationInput: "",
+        teams: { enable: false, entrypoint: "https://teams.microsoft.com/l/meeting/new" }
     },
     methods: {
         openTeamsSch(m) {
@@ -541,4 +542,13 @@ laydate.render({
         makeDay.setMinutes(s2[1])
         app.endTime = date2timestamp(makeDay)
     }
+})
+
+pullMetadata().then(meta => {
+    if (meta.teams.enable) {
+        app.teams.enable = meta.teams.enable
+        app.teams.entrypoint = meta.teams.entrypoint || app.teams.entrypoint
+    }
+}, err => {
+    console.log("pullMetadata error: " + err)
 })

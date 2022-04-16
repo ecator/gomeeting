@@ -15,6 +15,7 @@
         <script src="/js/laydate/laydate.js"></script>
         <script src="/js/fontawesome.min.js"></script>
         <script src="/js/markdown.min.js"></script>
+        <script src="/js/meta.js"></script>
     </head>
     <body>
         <section id="nav">
@@ -84,7 +85,7 @@
                                 <td><a v-if="!isCrossDay(meeting.end_time)" class="button is-small"
                                         v-on:click="extendMeeting(meeting)"><i
                                             class="fas fa-utensils"></i></a>
-                                    <a class="button is-small icon-teams" v-on:click="openTeamsSch(meeting)"><i class="fas fa-utensils"></i></a>
+                                    <a v-if="teams.enable" class="button is-small icon-teams" v-on:click="openTeamsSch(meeting)"><i class="fas fa-utensils"></i></a>
                                     <a class="button is-small is-danger
                                         is-outlined"
                                         v-on:click="deleteMeeting(meeting)"

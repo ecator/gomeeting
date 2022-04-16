@@ -37,3 +37,17 @@ type jsonRespMeeting struct {
 type jsonRespNotification struct {
 	Message string `json:"message"`
 }
+
+type jsonRespMeta struct {
+	LDAP struct {
+		Enable      bool `json:"enable"`
+		Placeholder struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		} `json:"placeholder"`
+	} `json:"ldap"`
+	Teams struct {
+		Enable     bool   `json:"enable"`
+		Entrypoint string `json:"entrypoint"`
+	} `json:"teams"`
+}

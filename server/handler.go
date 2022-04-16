@@ -46,6 +46,22 @@ func handleBrowerErr(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	responseFile(w, filepath.Join(frontDir, "brower_err.html"))
 }
 
+func handleMeta(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	var (
+		resp   jsonResp
+		meta   jsonRespMeta
+		status int
+	)
+	meta.LDAP.Enable = conf.LDAP.Enable
+	meta.LDAP.Placeholder.Username = conf.LDAP.Placeholder.Username
+	meta.LDAP.Placeholder.Password = conf.LDAP.Placeholder.Password
+	meta.Teams.Enable = conf.Teams.Enable
+	meta.Teams.Entrypoint = conf.Teams.Entrypoint
+	status = 0
+	resp = jsonResp{status, meta}
+	responseJSON(w, &resp)
+}
+
 func handleLogout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var (
 		resp   jsonResp
