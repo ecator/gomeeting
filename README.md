@@ -4,7 +4,7 @@ It's a very simple meeting room booking system written by go language for learni
 
 ## Build
 ### Required
- - go >= 1.13 (must)
+ - go >= 1.18 (must)
  - curl (must)
  - unzip (must)
  - GNU Make (must)
@@ -36,7 +36,7 @@ To run it must have a configuration file named `config.yml`.There is a template 
 ```shell
 mv config.yml.sample config.yml
 ```
-The file is also very simple because it's only related to the database and ldap.
+The file is also very simple because it's only related to the database and ldap and teams.
 
 Like this !
 
@@ -48,6 +48,9 @@ db:
   password: "password"
 ldap:
   enable: false
+  placeholder:
+    username: "AD account"
+    password: "AD password"
   addr: "127.0.0.1:389"
   baseDN: "cn=users,dc=test,dc=local"
   level: 10
@@ -55,11 +58,14 @@ ldap:
   attrMapKey:
     name: "displayName"
     email: "mail"
+teams:
+  enable: false
+  entrypoint: "https://teams.microsoft.com/l/meeting/new"
 ```
 
 It will use that to connect to mysql so be careful.
 
-If you want to use ldap, set the `ldap.enable` to `true`. It can't support TLS now.
+If you want to use ldap, set the `ldap.enable` to `true`. It can't support TLS now. The `ldap.placeholder` will be shown in login page if `ldap.enable` is `true`.
 
 The `ldap.orgID` will insert into `user`table as `org_id`field to mark as a ldap user. So you should add a ldap org like this.
 
@@ -72,6 +78,8 @@ The `ldap.attrMapKey` can use below to decide which attribute mapping `name` and
 ```shell
 ldapsearch -x -b "cn=username,cn=users,dc=test,dc=local" -h 127.0.0.1 -p 389 -D "cn=username,cn=users,dc=test,dc=local" -w "password"
 ```
+
+The teams icon will be shown if `teams.enable` is true and the `teams.entrypoint` will be used to decide how to open teams schedule.
 
 Now you can run `bin/gomeeting -a 0.0.0.0` to start the server.The `-a 0.0.0.0` option makes sure you can access this service from remote,otherwise it only listens on local.You can run `bin/gomeeting -h` for more details.
 
